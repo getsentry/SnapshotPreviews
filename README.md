@@ -175,12 +175,12 @@ Snapshot previews should be deterministic. Avoid live network calls, timers, ani
 
 ## Detecting the snapshot environment
 
-Set `XCODE_RUNNING_FOR_PREVIEWS=1` in your unit test scheme to mirror the variable Xcode sets when rendering live previews. You can then disable preview-unfriendly behavior (logging, analytics, network calls) with a single check:
+Set `SNAPSHOTS_RUNNING_FOR_PREVIEWS=1` in your unit test scheme to mirror the variable Xcode sets when rendering live previews. You can then disable preview-unfriendly behavior (logging, analytics, network calls) with a single check:
 
 ```swift
 extension ProcessInfo {
   var isRunningPreviews: Bool {
-    environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+    environment["SNAPSHOTS_RUNNING_FOR_PREVIEWS"] == "1"
   }
 }
 ```
