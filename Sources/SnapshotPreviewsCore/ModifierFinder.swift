@@ -47,6 +47,14 @@ public struct EmergeModifierView: View {
     stateMirror?.descendant("precision") as? Float
   }
 
+  var tags: [String: String] {
+    stateMirror?.descendant("tags") as? [String: String] ?? [:]
+  }
+
+  var additionalContext: [String: SnapshotMetadataValue] {
+    stateMirror?.descendant("additionalContext") as? [String: SnapshotMetadataValue] ?? [:]
+  }
+
   var supportsExpansion: Bool {
     stateMirror?.descendant("expansionPreference") as? Bool ?? true
   }

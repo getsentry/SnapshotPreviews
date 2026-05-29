@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import SnapshotSharedModels
 
 #if canImport(UIKit)
 import UIKit
@@ -29,13 +30,17 @@ public struct SnapshotResult {
     precision: Float?,
     accessibilityEnabled: Bool?,
     colorScheme: ColorScheme?,
-    appStoreSnapshot: Bool?)
+    appStoreSnapshot: Bool?,
+    tags: [String: String] = [:],
+    additionalContext: [String: SnapshotMetadataValue] = [:])
   {
     self.image = image
     self.precision = precision
     self.accessibilityEnabled = accessibilityEnabled
     self.colorScheme = colorScheme
     self.appStoreSnapshot = appStoreSnapshot
+    self.tags = tags
+    self.additionalContext = additionalContext
   }
 
   public let image: Result<ImageType, Error>
@@ -43,6 +48,8 @@ public struct SnapshotResult {
   public let accessibilityEnabled: Bool?
   public let colorScheme: ColorScheme?
   public let appStoreSnapshot: Bool?
+  public let tags: [String: String]
+  public let additionalContext: [String: SnapshotMetadataValue]
 }
 
 public protocol RenderingStrategy {

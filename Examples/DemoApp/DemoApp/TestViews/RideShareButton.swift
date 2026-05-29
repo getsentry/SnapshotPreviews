@@ -35,7 +35,7 @@ struct RideShareButtonView_Previews: PreviewProvider {
         .padding()
         .previewDisplayName("Ride Share Button View - Light")
         // This should never show as a diff
-        .diffThreshold(1.0)
+        .snapshotDiffThreshold(1.0)
       #if os(iOS)
         .snapshotRenderingMode(.coreAnimation)
       #endif

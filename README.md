@@ -92,16 +92,23 @@ The sidecar includes:
 | `display_name` | Snapshot name shown in Sentry. Generated from the preview name, file path, and module so exported filenames stay stable and unambiguous. |
 | `group` | Grouping key Sentry uses to organize related snapshots. Generated from the preview name, file path, and module. |
 | `diff_threshold` | Allowed visual difference for this snapshot. See details below. |
-| `context` | Supporting metadata such as test name, simulator info, orientation, color scheme, source line, and preview attributes. These fields are surfaced on the snapshot detail page in Sentry's UI. |
+| `tags` | Optional key-value pairs used to filter and group snapshots in Sentry. |
+| `context` | Supporting metadata such as test name, simulator info, orientation, color scheme, source line, preview attributes, and any custom context you add. These fields are surfaced on the snapshot detail page in Sentry's UI. |
 
-Use the `.diffThreshold(...)` view modifier from the `SnapshotPreferences` product to customize the allowed visual difference for a specific preview. For example, `.diffThreshold(0.05)` allows up to a 5% difference for that snapshot.
+SnapshotPreviews adds these `context` keys by default when values are available: `test_name`, `accessibility_enabled`, `simulator.device_name`, `simulator.model_identifier`, `preview.index`, `preview.display_name`, `preview.container_type_name`, `preview.container_display_name`, `preview.preferred_color_scheme`, `preview.orientation`, and `preview.line`.
+
+Use `.snapshotAdditionalContext(...)` to add custom fields to `context`. Custom context is shallow-merged into the generated context, so a custom key such as `"test_name"` replaces the generated value. Supported custom values are strings, numbers, booleans, and nested objects.
+
+Use the `.snapshotDiffThreshold(...)` view modifier from the `SnapshotPreferences` product to customize the allowed visual difference for a specific preview. For example, `.snapshotDiffThreshold(0.05)` allows up to a 5% difference for that snapshot.
 
 ```swift
 import SnapshotPreferences
 
 #Preview("Map") {
   MapPreview()
-    .diffThreshold(0.05)
+    .snapshotTags(["screen": "map"])
+    .snapshotAdditionalContext(["fixture": "city-route"])
+    .snapshotDiffThreshold(0.05)
 }
 ```
 
@@ -194,6 +201,9 @@ Link the `SnapshotPreferences` product to your app target to customize individua
 | `.snapshotAccessibility(true)` | You want an accessibility-focused variant. | On iOS, renders the snapshot through the accessibility overlay wrapper configured by your `SnapshotTest`, showing accessibility elements and labels instead of the plain view. The exported sidecar also records that accessibility was enabled. |
 | `.snapshotRenderingMode(.coreAnimation)` | The default renderer misses, flakes on, or incorrectly draws a view. | Changes the pixel capture backend. For example, `.coreAnimation` uses the layer tree, `.uiView` uses UIKit hierarchy drawing, and `.window` captures the full window. Different modes can affect blur/materials, maps, animations, and other renderer-sensitive content. |
 | `.snapshotExpansion(false)` | You want to preserve the visible scroll viewport instead of capturing all scroll content. | By default, scroll views are expanded so the snapshot includes their full content. Setting this to `false` keeps the scroll view at its normal visible height. |
+| `.snapshotTags(["area": "checkout"])` | You want searchable labels on the exported snapshot. | Adds top-level `tags` to the JSON sidecar. Repeated tag modifiers merge, and later duplicate keys win. |
+| `.snapshotAdditionalContext(["fixture": "loaded"])` | You want extra sidecar metadata for debugging or filtering. | Adds fields to the JSON sidecar `context` object. Repeated context modifiers merge, and later duplicate keys win. Custom keys override generated context keys. |
+| `.snapshotDiffThreshold(0.05)` | A snapshot has small expected pixel differences. | Sets `diff_threshold` in the exported sidecar for this preview. `0.05` allows up to a 5% changed-pixel share before Sentry marks the image as changed. |
 
 ## Variants
 

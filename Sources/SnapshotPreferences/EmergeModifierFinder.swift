@@ -24,6 +24,9 @@ class EmergeModifierState: NSObject {
     renderingMode = nil
     precision = nil
     accessibilityEnabled = nil
+    appStoreSnapshot = nil
+    tags = [:]
+    additionalContext = [:]
   }
 
   var expansionPreference: Bool?
@@ -31,6 +34,8 @@ class EmergeModifierState: NSObject {
   var precision: Float?
   var accessibilityEnabled: Bool?
   var appStoreSnapshot: Bool?
+  var tags: [String: String] = [:]
+  var additionalContext: [String: SnapshotMetadataValue] = [:]
 }
 
 @objc(EmergeModifierFinder)
@@ -52,6 +57,12 @@ class EmergeModifierFinder: NSObject {
       })
       .onPreferenceChange(AppStoreSnapshotPreferenceKey.self, perform: { value in
         EmergeModifierState.shared.appStoreSnapshot = value
+      })
+      .onPreferenceChange(SnapshotTagsPreferenceKey.self, perform: { value in
+        EmergeModifierState.shared.tags = value
+      })
+      .onPreferenceChange(SnapshotAdditionalContextPreferenceKey.self, perform: { value in
+        EmergeModifierState.shared.additionalContext = value
       })
   }
 }

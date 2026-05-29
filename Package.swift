@@ -43,7 +43,7 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         // Target that provides the XCTest
       .target(name: "SnapshottingTestsObjc", dependencies: [.product(name: "SimpleDebugger", package: "SimpleDebugger", condition: .when(platforms: [.iOS, .macOS, .macCatalyst]))]),
-        .target(name: "SnapshottingTests", dependencies: ["SnapshotPreviewsCore", "SnapshottingTestsObjc"]),
+        .target(name: "SnapshottingTests", dependencies: ["SnapshotPreviewsCore", "SnapshottingTestsObjc", "SnapshotSharedModels"]),
         .target(name: "SnapshotSharedModels"),
         // Core functionality
         .target(name: "SnapshotPreviewsCore", dependencies: ["PreviewsSupport", "SnapshotSharedModels"]),
@@ -60,8 +60,11 @@ let package = Package(
             name: "SnapshotPreviewsTests",
             dependencies: ["SnapshotPreviewsCore"]),
         .testTarget(
+            name: "SnapshotPreferencesTests",
+            dependencies: ["SnapshotPreferences", "SnapshotSharedModels"]),
+        .testTarget(
             name: "SnapshottingTestsTests",
-            dependencies: ["SnapshottingTests", "SnapshotPreviewsCore"]),
+            dependencies: ["SnapshottingTests", "SnapshotPreviewsCore", "SnapshotSharedModels"]),
     ],
     cxxLanguageStandard: .cxx11
 )

@@ -35,9 +35,9 @@ public class SwiftUIRenderingStrategy: RenderingStrategy {
     let image = renderer.nsImage
     #endif
     if let image {
-      completion(SnapshotResult(image: .success(image), precision: wrappedView.precision, accessibilityEnabled: wrappedView.accessibilityEnabled, colorScheme: colorScheme, appStoreSnapshot: wrappedView.appStoreSnapshot))
+      completion(SnapshotResult(image: .success(image), precision: wrappedView.precision, accessibilityEnabled: wrappedView.accessibilityEnabled, colorScheme: colorScheme, appStoreSnapshot: wrappedView.appStoreSnapshot, tags: wrappedView.tags, additionalContext: wrappedView.additionalContext))
     } else {
-      completion(SnapshotResult(image: .failure(RenderingError.failedRendering(.zero)), precision: wrappedView.precision, accessibilityEnabled: wrappedView.accessibilityEnabled, colorScheme: colorScheme, appStoreSnapshot: wrappedView.appStoreSnapshot))
+      completion(SnapshotResult(image: .failure(RenderingError.failedRendering(.zero)), precision: wrappedView.precision, accessibilityEnabled: wrappedView.accessibilityEnabled, colorScheme: colorScheme, appStoreSnapshot: wrappedView.appStoreSnapshot, tags: wrappedView.tags, additionalContext: wrappedView.additionalContext))
     }
   }
 }

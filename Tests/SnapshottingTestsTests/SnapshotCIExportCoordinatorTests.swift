@@ -7,6 +7,7 @@ import Foundation
 import XCTest
 @testable import SnapshottingTests
 import SnapshotPreviewsCore
+import SnapshotSharedModels
 
 #if canImport(UIKit)
 import UIKit
@@ -316,6 +317,70 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     XCTAssertNil(json["orientation"])
   }
 
+  func testSidecarIncludesTagsWhenProvided() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let context = makeContext(
+      baseFileName: "TestView_Tags",
+      tags: ["component": "button", "state": "loading"]
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let tags = try XCTUnwrap(json["tags"] as? [String: String])
+
+    XCTAssertEqual(tags["component"], "button")
+    XCTAssertEqual(tags["state"], "loading")
+  }
+
+  func testSidecarMergesAdditionalContext() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let context = makeContext(
+      baseFileName: "TestView_AdditionalContext",
+      additionalContext: [
+        "screen": .string("checkout"),
+        "attempt": .number(2),
+        "is_retry": .bool(true),
+        "fixture": .object([
+          "name": .string("happy-path"),
+          "version": .number(3),
+        ]),
+      ]
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let nestedContext = try XCTUnwrap(json["context"] as? [String: Any])
+    let fixture = try XCTUnwrap(nestedContext["fixture"] as? [String: Any])
+
+    XCTAssertEqual(nestedContext["screen"] as? String, "checkout")
+    XCTAssertEqual(nestedContext["attempt"] as? Double, 2)
+    XCTAssertEqual(nestedContext["is_retry"] as? Bool, true)
+    XCTAssertEqual(fixture["name"] as? String, "happy-path")
+    XCTAssertEqual(fixture["version"] as? Double, 3)
+  }
+
+  func testAdditionalContextOverridesGeneratedContextKeys() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let context = makeContext(
+      baseFileName: "TestView_ContextOverride",
+      additionalContext: [
+        "test_name": .string("custom-test-name"),
+      ]
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let nestedContext = try XCTUnwrap(json["context"] as? [String: Any])
+
+    XCTAssertEqual(nestedContext["test_name"] as? String, "custom-test-name")
+  }
+
   func testDiffThresholdIsDerivedFromPrecision() {
     XCTAssertEqual(SnapshotCIExportCoordinator.diffThreshold(for: 1.0) ?? .zero, 0.0, accuracy: 0.000_1)
     XCTAssertEqual(SnapshotCIExportCoordinator.diffThreshold(for: 0.8) ?? .zero, 0.2, accuracy: 0.000_1)
@@ -450,7 +515,9 @@ extension SnapshotCIExportCoordinatorTests {
     previewDisplayName: String? = "Preview",
     previewIndex: Int = 0,
     diffThreshold: Float? = nil,
-    colorScheme: String? = nil
+    colorScheme: String? = nil,
+    tags: [String: String] = [:],
+    additionalContext: [String: SnapshotMetadataValue] = [:]
   ) -> SnapshotContext {
     SnapshotContext(
       baseFileName: baseFileName,
@@ -466,7 +533,9 @@ extension SnapshotCIExportCoordinatorTests {
       simulatorModelIdentifier: nil,
       diffThreshold: diffThreshold,
       accessibilityEnabled: nil,
-      colorScheme: colorScheme
+      colorScheme: colorScheme,
+      tags: tags,
+      additionalContext: additionalContext
     )
   }
 

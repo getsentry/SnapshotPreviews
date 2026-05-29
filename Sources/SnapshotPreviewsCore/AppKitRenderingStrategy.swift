@@ -47,7 +47,7 @@ public class AppKitRenderingStrategy: RenderingStrategy {
     window.contentViewController = NSViewController()
     window.setContentSize(AppKitContainer.defaultSize)
     window.contentViewController = vc
-    vc.rendered = { [weak window, weak vc] mode, precision, accessibilityEnabled, appStoreSnapshot in
+    vc.rendered = { [weak window, weak vc] mode, precision, accessibilityEnabled, appStoreSnapshot, tags, additionalContext in
       DispatchQueue.main.async {
         Self.takeSnapshot(mode: mode ?? .nsView, viewController: vc, window: window) { image in
           completion(
@@ -56,7 +56,9 @@ public class AppKitRenderingStrategy: RenderingStrategy {
               precision: precision,
               accessibilityEnabled: accessibilityEnabled,
               colorScheme: _colorScheme,
-              appStoreSnapshot: appStoreSnapshot))
+              appStoreSnapshot: appStoreSnapshot,
+              tags: tags,
+              additionalContext: additionalContext))
         }
       }
     }
@@ -116,7 +118,7 @@ final class AppKitContainer: NSHostingController<EmergeModifierView>, ScrollExpa
   var heightAnchor: NSLayoutConstraint?
   var previousHeight: CGFloat?
 
-  public var rendered: ((EmergeRenderingMode?, Float?, Bool?, Bool?) -> Void)? {
+  public var rendered: ((EmergeRenderingMode?, Float?, Bool?, Bool?, [String: String], [String: SnapshotMetadataValue]) -> Void)? {
     didSet { didCall = false }
   }
 
@@ -166,7 +168,7 @@ final class AppKitContainer: NSHostingController<EmergeModifierView>, ScrollExpa
     guard !didCall else { return }
 
     didCall = true
-    rendered?(rootView.emergeRenderingMode, rootView.precision, rootView.accessibilityEnabled, rootView.appStoreSnapshot)
+    rendered?(rootView.emergeRenderingMode, rootView.precision, rootView.accessibilityEnabled, rootView.appStoreSnapshot, rootView.tags, rootView.additionalContext)
   }
 
   override func updateViewConstraints() {

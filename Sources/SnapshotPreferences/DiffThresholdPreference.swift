@@ -25,11 +25,16 @@ extension View {
     /// struct ContentView: View {
     ///     var body: some View {
     ///         Image("sample")
-    ///             .diffThreshold(0.2)
+    ///             .snapshotDiffThreshold(0.2)
     ///     }
     /// }
     /// ```
-    public func diffThreshold(_ diffThreshold: Float?) -> some View {
+    public func snapshotDiffThreshold(_ diffThreshold: Float?) -> some View {
         preference(key: PrecisionPreferenceKey.self, value: diffThreshold.map { 1 - $0 })
+    }
+
+    @available(*, deprecated, renamed: "snapshotDiffThreshold(_:)")
+    public func diffThreshold(_ diffThreshold: Float?) -> some View {
+        snapshotDiffThreshold(diffThreshold)
     }
 }

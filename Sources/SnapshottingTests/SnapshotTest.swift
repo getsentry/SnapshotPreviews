@@ -305,7 +305,9 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
         simulatorModelIdentifier: ProcessInfo.processInfo.environment["SIMULATOR_MODEL_IDENTIFIER"],
         diffThreshold: SnapshotCIExportCoordinator.diffThreshold(for: result.precision),
         accessibilityEnabled: result.accessibilityEnabled,
-        colorScheme: colorSchemeValue)
+        colorScheme: colorSchemeValue,
+        tags: result.tags,
+        additionalContext: result.additionalContext)
       coordinator.enqueueExport(result: result, context: context)
     } else {
       do {

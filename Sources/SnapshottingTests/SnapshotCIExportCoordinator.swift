@@ -8,6 +8,7 @@
 
 import Foundation
 import XCTest
+import SnapshotSharedModels
 @_implementationOnly import SnapshotPreviewsCore
 
 // MARK: - Snapshot Context
@@ -27,79 +28,120 @@ struct SnapshotContext: Sendable {
   let diffThreshold: Float?
   let accessibilityEnabled: Bool?
   let colorScheme: String?
+  let tags: [String: String]
+  let additionalContext: [String: SnapshotMetadataValue]
 }
 
 // MARK: - Sidecar Model
+
+private enum SnapshotSidecarContextKey {
+  /// The XCTest test name that produced this snapshot.
+  static let testName = "test_name"
+  /// Whether the snapshot was rendered with accessibility metadata enabled.
+  static let accessibilityEnabled = "accessibility_enabled"
+  /// Simulator metadata for the device that rendered this snapshot.
+  static let simulator = "simulator"
+  /// Preview metadata for the SwiftUI preview that produced this snapshot.
+  static let preview = "preview"
+
+  enum Simulator {
+    /// Human-readable simulator device name, if available.
+    static let deviceName = "device_name"
+    /// Simulator model identifier, if available.
+    static let modelIdentifier = "model_identifier"
+  }
+
+  enum Preview {
+    /// The preview's zero-based index within its container.
+    static let index = "index"
+    /// The author-declared `.previewDisplayName(...)` value, if set.
+    static let displayName = "display_name"
+    /// Fully-qualified type name of the container that declared this preview
+    /// (the `PreviewProvider` struct, or the compiler-synthesized `PreviewRegistry`
+    /// conformance for a `#Preview` macro).
+    static let containerTypeName = "container_type_name"
+    /// Human-readable label derived from the container's type name or file name.
+    /// Not author-declared — there's no SwiftUI API to set it.
+    static let containerDisplayName = "container_display_name"
+    /// The author-declared `.preferredColorScheme(_:)` value, if set. `"light"` or `"dark"`.
+    static let preferredColorScheme = "preferred_color_scheme"
+    /// The author-declared preview interface orientation (e.g. `"portrait"`, `"landscapeLeft"`).
+    /// Defaults to `"portrait"` when the author doesn't declare one.
+    static let orientation = "orientation"
+    /// The source line that declared the preview, if available.
+    static let line = "line"
+  }
+}
 
 private struct SnapshotSidecar: Sendable, Encodable {
   let displayName: String
   let group: String
   let diffThreshold: Float?
-  let context: Context
-
-  struct Context: Sendable, Encodable {
-    let testName: String
-    let accessibilityEnabled: Bool
-    let simulator: Simulator?
-    let preview: Preview
-
-    struct Simulator: Sendable, Encodable {
-      let deviceName: String?
-      let modelIdentifier: String?
-    }
-    
-    struct Preview: Sendable, Encodable {
-      let index: Int
-      /// The author-declared `.previewDisplayName(...)` value, if set.
-      let displayName: String?
-      /// Fully-qualified type name of the container that declared this preview
-      /// (the `PreviewProvider` struct, or the compiler-synthesized `PreviewRegistry`
-      /// conformance for a `#Preview` macro).
-      let containerTypeName: String
-      /// Human-readable label derived from the container's type name or file name.
-      /// Not author-declared — there's no SwiftUI API to set it.
-      let containerDisplayName: String
-      /// The author-declared `.preferredColorScheme(_:)` value, if set. `"light"` or `"dark"`.
-      let preferredColorScheme: String?
-      /// The author-declared preview interface orientation (e.g. `"portrait"`, `"landscapeLeft"`).
-      /// Defaults to `"portrait"` when the author doesn't declare one.
-      let orientation: String?
-      let line: Int?
-    }
-  }
+  let tags: [String: String]?
+  let context: [String: SnapshotMetadataValue]
 
   init(
     context: SnapshotContext,
-    imageFileName: String,
     displayName: String,
     group: String
   ) {
     self.displayName = displayName
     self.group = group
     self.diffThreshold = context.diffThreshold
+    self.tags = context.tags.isEmpty ? nil : context.tags
 
-    let simulator: Context.Simulator? =
-      (context.simulatorDeviceName == nil && context.simulatorModelIdentifier == nil)
-      ? nil
-      : Context.Simulator(
-          deviceName: context.simulatorDeviceName,
-          modelIdentifier: context.simulatorModelIdentifier
-        )
+    var generatedContext: [String: SnapshotMetadataValue] = [
+      SnapshotSidecarContextKey.testName: .string(context.testName),
+      SnapshotSidecarContextKey.accessibilityEnabled: .bool(context.accessibilityEnabled ?? false),
+      SnapshotSidecarContextKey.preview: .object(Self.previewContext(from: context)),
+    ]
 
-    self.context = Context(
-      testName: context.testName,
-      accessibilityEnabled: context.accessibilityEnabled ?? false,
-      simulator: simulator,
-      preview: Context.Preview(
-        index: context.previewIndex,
-        displayName: context.previewDisplayName,
-        containerTypeName: context.typeName,
-        containerDisplayName: context.typeDisplayName,
-        preferredColorScheme: context.colorScheme,
-        orientation: context.orientation.isEmpty ? nil : context.orientation,
-        line: context.line
-      )
-    )
+    if let simulatorContext = Self.simulatorContext(from: context) {
+      generatedContext[SnapshotSidecarContextKey.simulator] = .object(simulatorContext)
+    }
+
+    generatedContext.merge(context.additionalContext, uniquingKeysWith: { _, userValue in userValue })
+    self.context = generatedContext
+  }
+
+  private static func simulatorContext(from context: SnapshotContext) -> [String: SnapshotMetadataValue]? {
+    var simulator: [String: SnapshotMetadataValue] = [:]
+
+    if let deviceName = context.simulatorDeviceName {
+      simulator[SnapshotSidecarContextKey.Simulator.deviceName] = .string(deviceName)
+    }
+
+    if let modelIdentifier = context.simulatorModelIdentifier {
+      simulator[SnapshotSidecarContextKey.Simulator.modelIdentifier] = .string(modelIdentifier)
+    }
+
+    return simulator.isEmpty ? nil : simulator
+  }
+
+  private static func previewContext(from context: SnapshotContext) -> [String: SnapshotMetadataValue] {
+    var preview: [String: SnapshotMetadataValue] = [
+      SnapshotSidecarContextKey.Preview.index: .number(Double(context.previewIndex)),
+      SnapshotSidecarContextKey.Preview.containerTypeName: .string(context.typeName),
+      SnapshotSidecarContextKey.Preview.containerDisplayName: .string(context.typeDisplayName),
+    ]
+
+    if let previewDisplayName = context.previewDisplayName {
+      preview[SnapshotSidecarContextKey.Preview.displayName] = .string(previewDisplayName)
+    }
+
+    if let colorScheme = context.colorScheme {
+      preview[SnapshotSidecarContextKey.Preview.preferredColorScheme] = .string(colorScheme)
+    }
+
+    if !context.orientation.isEmpty {
+      preview[SnapshotSidecarContextKey.Preview.orientation] = .string(context.orientation)
+    }
+
+    if let line = context.line {
+      preview[SnapshotSidecarContextKey.Preview.line] = .number(Double(line))
+    }
+
+    return preview
   }
 }
 
@@ -272,7 +314,6 @@ final class SnapshotCIExportCoordinator: NSObject, XCTestObservation {
 
       let sidecar = SnapshotSidecar(
         context: context,
-        imageFileName: context.baseFileName,
         displayName: displayName,
         group: group
       )
