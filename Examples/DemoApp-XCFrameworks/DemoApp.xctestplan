@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "id": "FF846110-BFA2-419E-BF99-A9FC438920E2",
+      "name": "Configuration 1",
+      "options": {}
+    }
+  ],
+  "defaultOptions": {},
+  "testTargets": [
+    {
+      "target": {
+        "containerPath": "container:DemoApp-XCFrameworks.xcodeproj",
+        "identifier": "FA8F8B7A2C66C4C4007CEA33",
+        "name": "DemoAppTests"
+      }
+    }
+  ],
+  "version": 1
+}

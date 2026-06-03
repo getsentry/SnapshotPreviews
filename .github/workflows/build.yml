@@ -15,7 +15,7 @@ jobs:
       - name: Xcode select
         run: sudo xcode-select -s '/Applications/Xcode_15.4.app/Contents/Developer'
       - name: Build TestApp
-        run: cd Examples && xcodebuild build -scheme DemoApp -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -project DemoApp/DemoApp.xcodeproj
+        run: cd Examples && xcodebuild build -scheme DemoApp -destination 'generic/platform=iOS Simulator' -project DemoApp/DemoApp.xcodeproj
       - name: Build Snapshotting
         run: xcodebuild build -scheme Snapshotting -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'
       - name: Build SnapshottingTests

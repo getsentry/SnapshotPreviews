@@ -5,7 +5,7 @@
 
 Generate snapshot images from your Xcode previews with zero test code, and export them to disk for upload to [Sentry Snapshots](https://docs.sentry.io/product/snapshots/) or any other visual diffing service. Works with SwiftUI and UIKit previews using `PreviewProvider` or `#Preview`, on all Apple platforms (iOS / macOS / watchOS / tvOS / visionOS).
 
-# Installation
+## Installation
 
 Add the package as a Swift Package Manager dependency using the repository URL:
 
@@ -19,7 +19,7 @@ https://github.com/EmergeTools/SnapshotPreviews
 
 Link your XCTest target to the `SnapshottingTests` product. If you also want to customize per-preview rendering (e.g. precision, layout) you can link `SnapshotPreferences` to your app target.
 
-# Generating Snapshots
+## Generating Snapshots
 
 Create a test class that inherits from `SnapshotTest`. There are no test functions to write — they're added at runtime, one per discovered preview:
 
@@ -44,7 +44,7 @@ By default each rendered preview is attached to the XCTest results bundle as a P
 
 ![Screenshot of Xcode test output](https://raw.githubusercontent.com/EmergeTools/SnapshotPreviews/master/images/testOutput.png)
 
-## Filtering by module
+### Filtering by module
 
 If your app links several frameworks, you can scope discovery to specific modules:
 
@@ -59,13 +59,13 @@ override class func excludedSnapshotPreviewModules() -> [String]? { ["LegacyModu
 > [!NOTE]
 > Preview macros (`#Preview("Display Name")`) produce snapshot names based on file path and display name, for example: `MyModule/MyFile.swift:Display Name`.
 
-# Uploading Snapshots to Sentry
+## Exporting snapshots for Sentry
 
 `SnapshotPreviews` is the recommended iOS feeder for [Sentry Snapshots](https://docs.sentry.io/product/snapshots/). The flow has two steps: `xcodebuild test` writes PNGs + JSON sidecars to a directory, then `sentry-cli build snapshots` uploads that directory.
 
 ![Sentry Snapshots visual diff UI](https://github.com/user-attachments/assets/3a9e5c84-7954-4e73-89a1-3e5a181b7c7c)
 
-## 1. Export the snapshots from your test run
+### 1. Export the snapshots from your test run
 
 Set `TEST_RUNNER_SNAPSHOTS_EXPORT_DIR` on the test invocation. When set, `SnapshotTest` writes images directly to that directory instead of attaching them to the `.xcresult` bundle.
 
@@ -114,7 +114,7 @@ import SnapshotPreferences
 
 No Xcode code-coverage data (`.profraw` / `.profdata`) is written by the exporter — only the PNGs and sidecars. If you need code coverage from the same test run, enable it on the scheme as usual; coverage output goes to the `.xcresult` bundle independently.
 
-## 2. Upload to Sentry
+### 2. Upload to Sentry
 
 Choose one of the upload options below.
 
@@ -156,9 +156,9 @@ Use Sentry's Fastlane integration if your CI already uploads Apple artifacts thr
 
 See Sentry's [CI integration docs](https://docs.sentry.io/product/snapshots/integrating-into-ci/) for sharding across simulators and base/head SHA pinning.
 
-# Tips
+## Tips
 
-## Unique display names
+### Unique display names
 
 Give every preview a unique display name. This is what shows up in XCTest results and in the exported filenames / metadata:
 
@@ -176,11 +176,11 @@ struct MyView_Previews: PreviewProvider {
 
 Display names should be unique within each `PreviewProvider`, or within a file when using preview macros.
 
-## Snapshot best practices
+### Snapshot best practices
 
 Snapshot previews should be deterministic. Avoid live network calls, timers, animations that do not settle, locale-dependent data, and dates generated from the current clock. Prefer fixed fixtures and mocked dependencies so the same preview renders the same pixels in Xcode, local test runs, and CI.
 
-## Detecting the snapshot environment
+### Detecting the snapshot environment
 
 Set `SNAPSHOTS_RUNNING_FOR_PREVIEWS=1` in your unit test scheme to mirror the variable Xcode sets when rendering live previews. You can then disable preview-unfriendly behavior (logging, analytics, network calls) with a single check:
 
@@ -192,7 +192,7 @@ extension ProcessInfo {
 }
 ```
 
-## Snapshot modifiers
+### Snapshot modifiers
 
 Link the `SnapshotPreferences` product to your app target to customize individual previews before they are rendered by `SnapshotTest`.
 
@@ -205,7 +205,7 @@ Link the `SnapshotPreferences` product to your app target to customize individua
 | `.snapshotAdditionalContext(["fixture": "loaded"])` | You want extra sidecar metadata for debugging or filtering. | Adds fields to the JSON sidecar `context` object. Repeated context modifiers merge, and later duplicate keys win. Custom keys override generated context keys. |
 | `.snapshotDiffThreshold(0.05)` | A snapshot has small expected pixel differences. | Sets `diff_threshold` in the exported sidecar for this preview. `0.05` allows up to a 5% changed-pixel share before Sentry marks the image as changed. |
 
-## Variants
+### Variants
 
 > [!TIP]
 > `PreviewVariants` simplifies snapshot testing by ensuring a consistent set of variants and that every view has a name.
@@ -231,15 +231,50 @@ struct MyView_Previews: PreviewProvider {
 }
 ```
 
-# Additional Features
+## Additional Features
 
-## Preview rendering check (no PNGs)
+### Preview rendering check (no PNGs)
 
 If you only want to verify that every preview lays out without crashing — for example, to catch a missing `@EnvironmentObject` — inherit from `PreviewLayoutTest` instead of `SnapshotTest`. It runs the same discovery pipeline but skips the image render, so it's significantly faster. This gives you *preview coverage* (every preview was exercised); it does not produce Xcode code-coverage data.
 
-## Preview Gallery
+### Preview Gallery
 
 `PreviewGallery` is an interactive SwiftUI view that turns your previews into a browsable gallery of components — useful for internal builds where Xcode isn't available. Link your app to the `PreviewGallery` product and present it from wherever makes sense:
+
+> [!NOTE]
+> `PreviewGallery` discovers previews from runtime metadata in the built app. If no previews are present in that build, the gallery will open with no previews to display.
+
+#### Internal distribution builds
+
+`PreviewGallery` is designed for development and trusted internal distribution. If you want to include it in a TestFlight or other internal build, create a dedicated build configuration or archive scheme instead of changing your production Release configuration. The previews must both compile into that build and survive optimization:
+
+1. Link the app target to the `PreviewGallery` product.
+2. Configure Swift optimization so preview metadata is retained. Release configurations often use whole-module optimization, which can remove unreferenced preview declarations even when they compile successfully. For the internal gallery configuration, disable whole-module optimization or use a Debug-like compilation mode, then verify that the gallery shows the expected previews before distributing it.
+3. If your previews are wrapped in `#if DEBUG`, add a custom Swift compilation condition, such as `PREVIEW_GALLERY`, to the internal build configuration. In Xcode, set this under **Build Settings > Swift Compiler - Custom Flags > Active Compilation Conditions** (`SWIFT_ACTIVE_COMPILATION_CONDITIONS`). Then keep preview declarations compiled for Debug and that internal configuration:
+
+```swift
+#if DEBUG || PREVIEW_GALLERY
+#Preview {
+  MyView()
+}
+#endif
+```
+
+For `PreviewProvider` previews, wrap the provider type the same way:
+
+```swift
+#if DEBUG || PREVIEW_GALLERY
+struct MyView_Previews: PreviewProvider {
+  static var previews: some View {
+    MyView()
+  }
+}
+#endif
+```
+
+If your previews rely on assets, JSON fixtures, or other resources from a `Preview Content` folder, make sure those resources are included in the internal gallery build. Xcode Development Assets are intended for previews and Simulator development without increasing final app size, so they may not be present in builds you distribute.
+
+Only expose the gallery in trusted internal builds, and gate access appropriately, because previews can reveal unfinished UI, mock data, or internal states.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/EmergeTools/SnapshotPreviews/master/images/image1.png" />
@@ -263,7 +298,7 @@ struct InternalSettingsView: View {
 }
 ```
 
-## Accessibility audits
+### Accessibility audits
 
 Xcode [accessibility audits](https://developer.apple.com/documentation/xctest/xcuiapplication/4191487-performaccessibilityaudit) can run on every preview as part of a UI test. Inherit from `AccessibilityPreviewTest` and override the audit type / issue handler as needed:
 
@@ -293,11 +328,32 @@ See the demo app under `Examples/` for a full example.
   Previews are discovered in the test binary by parsing the `__swift5_proto` Mach-O section to find types that conform to `PreviewProvider` (and the related protocols generated by the `#Preview` macro). Background on how this works in the Swift runtime: [The Surprising Cost of Protocol Conformances in Swift](https://www.emergetools.com/blog/posts/SwiftProtocolConformance).
 </details>
 
-# Related Reading
+## Binary frameworks
+
+While Swift Package Manager is the recommended way to integrate SnapshotPreviews, every release also ships the frameworks as prebuilt XCFramework `.zip` assets:
+
+- `SnapshotPreferences.xcframework.zip` — user-facing SwiftUI preference modifiers.
+- `PreviewGallery.xcframework.zip` — user-facing preview gallery UI.
+- `SnapshottingTests.xcframework.zip` — user-facing XCTest snapshot and layout helpers.
+- `SnapshotSharedModels.xcframework.zip` — required support dependency shared by the public APIs.
+- `SnapshotPreviewsCore.xcframework.zip` — required support dependency for preview discovery and rendering.
+- `PreviewsSupport.xcframework.zip` — required binary support dependency for `SnapshotPreviewsCore`.
+- `Snapshotting.xcframework.zip` — compatibility/runtime artifact for inserted-dylib accessibility and UI-test workflows.
+
+Xcode does not infer transitive dependencies between manually added binary frameworks, so add the full dependency set for each target:
+
+- App target using per-preview rendering preferences: link and embed `SnapshotPreferences.xcframework` and `SnapshotSharedModels.xcframework`.
+- App target using the gallery UI: link and embed `PreviewGallery.xcframework`, `SnapshotPreviewsCore.xcframework`, `SnapshotPreferences.xcframework`, `SnapshotSharedModels.xcframework`, and `PreviewsSupport.xcframework`.
+- XCTest snapshot/layout target: link and embed `SnapshottingTests.xcframework`, `SnapshotPreviewsCore.xcframework`, `SnapshotSharedModels.xcframework`, and `PreviewsSupport.xcframework`.
+- Accessibility/UI-test target using the inserted-dylib flow: link and embed `SnapshottingTests.xcframework`, `Snapshotting.xcframework`, `SnapshotPreviewsCore.xcframework`, `SnapshotSharedModels.xcframework`, and `PreviewsSupport.xcframework`.
+
+You don't need to build anything to use the released artifacts above. You can build them locally from source using `bash build.sh` from the repository root. It requires Xcode and Ruby, writes the frameworks to `XCFrameworks/`, and validates the output.
+
+## Related Reading
 
 - [How to use VariadicView, SwiftUI's Private View API](https://www.emergetools.com/blog/posts/how-to-use-variadic-view) — `VariadicView` is how multiple images are rendered for one `PreviewProvider`.
 - [The Surprising Cost of Protocol Conformances in Swift](https://www.emergetools.com/blog/posts/SwiftProtocolConformance) — how preview types are discovered in app binaries.
 
-# Star History
+## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=EmergeTools/SnapshotPreviews&type=Date)](https://star-history.com/#EmergeTools/SnapshotPreviews&Date)
