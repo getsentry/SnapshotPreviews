@@ -1,4 +1,7 @@
 .DS_Store
+/build/
+/Package.resolved
+/XCFrameworks/
 /.build
 /Packages
 xcuserdata/

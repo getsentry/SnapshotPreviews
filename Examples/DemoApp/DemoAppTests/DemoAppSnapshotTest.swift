@@ -9,8 +9,10 @@ import Foundation
 #if canImport(UIKit)
 import UIKit
 #endif
-import SnapshottingTests
+#if canImport(AccessibilitySnapshotCore)
 import AccessibilitySnapshotCore
+#endif
+import SnapshottingTests
 
 class DemoAppSnapshotTest: SnapshotTest {
   override class func snapshotPreviews() -> [String]? {
@@ -28,8 +30,8 @@ class DemoAppSnapshotTest: SnapshotTest {
   override class func excludedSnapshotPreviewModules() -> [String]? {
     return nil
   }
-  
-  #if canImport(UIKit) && !os(watchOS) && !os(visionOS) && !os(tvOS)
+
+  #if canImport(UIKit) && canImport(AccessibilitySnapshotCore) && !os(watchOS) && !os(visionOS) && !os(tvOS)
   override open class func setupA11y() -> ((UIViewController, UIWindow, PreviewLayout) -> UIView)? {
     return { (controller: UIViewController, window: UIWindow, layout: PreviewLayout) in
       let containerVC = controller.parent
@@ -45,7 +47,7 @@ class DemoAppSnapshotTest: SnapshotTest {
         viewRenderingMode: controller.view.bounds.size.requiresCoreAnimationSnapshot ? .renderLayerInContext : .drawHierarchyInRect,
         activationPointDisplayMode: .never,
         showUserInputLabels: true)
-    
+
       a11yView.center = window.center
       window.addSubview(a11yView)
 
@@ -57,8 +59,10 @@ class DemoAppSnapshotTest: SnapshotTest {
   #endif
 }
 
+#if canImport(UIKit)
 extension CGSize {
   var requiresCoreAnimationSnapshot: Bool {
     height >= UIScreen.main.bounds.size.height * 2
   }
 }
+#endif

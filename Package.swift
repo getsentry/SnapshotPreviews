@@ -10,13 +10,11 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
           name: "PreviewGallery",
-          type: .static, // Replace this to build dynamic
           targets: ["PreviewGallery"]),
         // Test library to import in your XCTest target.
         // This is the only library that depends on XCTest.framework
         .library(
           name: "SnapshottingTests",
-          type: .static, // Replace this to build dynamic
           targets: ["SnapshottingTests"]),
         // Link the main app to this target to use custom snapshot settings
         // This lib does not get inserted when running tests to avoid
@@ -28,6 +26,10 @@ let package = Package(
         .library(
           name: "SnapshotPreviewsCore",
           targets: ["SnapshotPreviewsCore"]),
+        // Shared models required by the binary framework distribution.
+        .library(
+          name: "SnapshotSharedModels",
+          targets: ["SnapshotSharedModels"]),
         // Dynamic library that your main app will have inserted to generate previews
         .library(
           name: "Snapshotting",
