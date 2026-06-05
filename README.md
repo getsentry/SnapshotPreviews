@@ -77,8 +77,19 @@ xcodebuild test \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
 ```
 
+### Environment variables
+
+SnapshotPreviews supports these test-runner environment variables:
+
+| Variable | Description |
+| --- | --- |
+| `TEST_RUNNER_SNAPSHOTS_EXPORT_DIR` | Writes rendered snapshot PNGs and JSON sidecars to the given directory instead of attaching PNGs to the `.xcresult` bundle. |
+| `TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FILE` | Writes all discovered logical `.png` image names to the given file, then returns without rendering previews. Used to support selective testing workflows. |
+
+These modes are mutually exclusive. If `TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FILE` is set, SnapshotPreviews writes image names only and does not render or export snapshot images.
+
 > [!NOTE]
-> The `TEST_RUNNER_` prefix is how Xcode forwards an environment variable from `xcodebuild` into the test runner process. Inside the runner the variable is read as `SNAPSHOTS_EXPORT_DIR`.
+> The `TEST_RUNNER_` prefix is how Xcode forwards an environment variable from `xcodebuild` into the test runner process. Inside the runner, SnapshotPreviews reads the variable without that prefix.
 
 For every rendered preview, two files are written:
 

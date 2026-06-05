@@ -1,7 +1,7 @@
 import Foundation
 
 final class AllSnapshotImageNamesWriter {
-  static let envKey = "SNAPSHOT_PREVIEWS_ALL_IMAGE_NAMES_FILE"
+  static let envKey = "SNAPSHOTS_ALL_IMAGE_NAMES_FILE"
 
   private let outputURL: URL
 
