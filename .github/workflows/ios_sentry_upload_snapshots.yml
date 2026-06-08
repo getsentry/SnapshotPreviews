@@ -332,4 +332,4 @@ jobs:
             --auth-token "${SENTRY_AUTH_TOKEN}" \
             --project "${SENTRY_PROJECT}" \
             --app-id "${SENTRY_APP_ID}" \
-            --all-image-file-names-file "${{ github.workspace }}/snapshot-image-names/all-image-names.txt"
+            --all-image-file-names-file "${ALL_IMAGE_NAMES_FILE}"
