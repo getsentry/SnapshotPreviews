@@ -215,6 +215,18 @@ jobs:
     runs-on: macos-26
     needs: build_for_testing
 
+    strategy:
+      fail-fast: false
+      matrix:
+        snapshot_test:
+          - name: MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests
+            slug: MultiModuleDemoSnapshotSingleModuleAllowTests
+          - name: MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests
+            slug: MultiModuleDemoSnapshotMultipleModuleAllowTests
+
+    env:
+      IMAGE_NAMES_FILE: ${{ github.workspace }}/snapshot-image-names/all-image-names-${{ matrix.snapshot_test.slug }}.txt
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -240,34 +252,22 @@ jobs:
 
       - name: Generate all image names
         run: |
-          set -euo pipefail
-          mkdir -p "$(dirname "${ALL_IMAGE_NAMES_FILE}")"
-          name_files=()
-          tests=(
-            "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
-            "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
-          )
+          mkdir -p "$(dirname "${IMAGE_NAMES_FILE}")"
 
-          for index in "${!tests[@]}"; do
-            name_file="${RUNNER_TEMP}/snapshot-names-${index}.txt"
-            name_files+=("${name_file}")
+          TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FILE="${IMAGE_NAMES_FILE}" \
+          xcodebuild test-without-building \
+            -xctestrun "${DERIVED_DATA_PATH}/Build/Products/${XCTESTRUN_FILENAME}" \
+            -destination "${SNAPSHOT_DESTINATION}" \
+            -only-testing:"${{ matrix.snapshot_test.name }}" \
+            -resultBundlePath "SnapshotImageNames-${{ matrix.snapshot_test.slug }}.xcresult"
 
-            TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FILE="${name_file}" \
-            xcodebuild test-without-building \
-              -xctestrun "${DERIVED_DATA_PATH}/Build/Products/${XCTESTRUN_FILENAME}" \
-              -destination "${SNAPSHOT_DESTINATION}" \
-              -only-testing:"${tests[$index]}" \
-              -resultBundlePath "SnapshotImageNames-${index}.xcresult"
-          done
-
-          cat "${name_files[@]}" | sort -u > "${ALL_IMAGE_NAMES_FILE}"
-          cat "${ALL_IMAGE_NAMES_FILE}"
+          cat "${IMAGE_NAMES_FILE}"
 
       - name: Upload image names artifact
         uses: actions/upload-artifact@v7
         with:
-          name: snapshot-image-names
-          path: ${{ env.ALL_IMAGE_NAMES_FILE }}
+          name: snapshot-image-names-${{ matrix.snapshot_test.slug }}
+          path: ${{ env.IMAGE_NAMES_FILE }}
           if-no-files-found: error
 
   upload_snapshots:
@@ -290,8 +290,21 @@ jobs:
       - name: Download image names
         uses: actions/download-artifact@v5
         with:
-          name: snapshot-image-names
           path: ${{ github.workspace }}/snapshot-image-names
+          pattern: snapshot-image-names-*
+          merge-multiple: true
+
+      - name: Aggregate image names
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "${ALL_IMAGE_NAMES_FILE}")"
+          mapfile -t image_name_files < <(find "${{ github.workspace }}/snapshot-image-names" -type f -name '*.txt' | sort)
+          if [ "${#image_name_files[@]}" -eq 0 ]; then
+            echo "No image name files found" >&2
+            exit 1
+          fi
+
+          cat "${image_name_files[@]}" | sort -u > "${ALL_IMAGE_NAMES_FILE}"
 
       - name: List aggregated snapshot files
         run: |
@@ -299,7 +312,7 @@ jobs:
           find "${SNAPSHOT_UPLOAD_BASE_DIR}" -type f | sort
           echo
           echo "All image names:"
-          cat "${{ github.workspace }}/snapshot-image-names/all-image-names.txt"
+          cat "${ALL_IMAGE_NAMES_FILE}"
           echo
           echo "Total PNG images: $(find "${SNAPSHOT_UPLOAD_BASE_DIR}" -type f -name '*.png' | wc -l | tr -d ' ')"
 
