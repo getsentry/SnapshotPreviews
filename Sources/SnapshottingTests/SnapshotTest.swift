@@ -222,13 +222,19 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
     #endif
   private static var renderingStrategy: RenderingStrategy? = nil
   @MainActor private static var ciExportCoordinator: SnapshotCIExportCoordinator?
+  @MainActor private static var allSnapshotImageNamesWriter: AllSnapshotImageNamesWriter?
 
   static private var previews: [SnapshotPreviewsCore.PreviewType] = []
   static private var fileNameResolver = FileNameResolver(previews: [])
 
   @MainActor
   override class func discoverPreviews() -> [DiscoveredPreview] {
-    ciExportCoordinator = SnapshotCIExportCoordinator.createFromEnvironment()
+    allSnapshotImageNamesWriter = AllSnapshotImageNamesWriter.createFromEnvironment()
+    if allSnapshotImageNamesWriter == nil {
+      ciExportCoordinator = SnapshotCIExportCoordinator.createFromEnvironment()
+    } else {
+      ciExportCoordinator = nil
+    }
 
     previews = FindPreviews.findPreviews(
       included: Self.snapshotPreviews(),
@@ -237,7 +243,47 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
       excludedModules: Self.excludedSnapshotPreviewModules()
     )
     fileNameResolver = FileNameResolver(previews: previews)
+
+    if let allSnapshotImageNamesWriter {
+      allSnapshotImageNamesWriter.write(
+        imageNames: logicalImageNames(previews: previews, fileNameResolver: fileNameResolver)
+      )
+      return []
+    }
+
     return previews.map { DiscoveredPreview.from(previewType: $0) }
+  }
+
+  static func logicalImageNames(
+    previews: [SnapshotPreviewsCore.PreviewType],
+    fileNameResolver: FileNameResolver,
+    environment: [String: String] = ProcessInfo.processInfo.environment
+  ) -> [String] {
+    let currentDeviceName = SnapshotPreviewDestination.currentDeviceName(environment: environment)
+    var imageNames: [String] = []
+
+    for previewType in previews {
+      for previewIndex in previewType.previews.indices {
+        let requestedDeviceName = previewType.previews[previewIndex].device?.rawValue
+        guard SnapshotPreviewDeviceFilter.shouldInclude(
+          requestedDeviceName: requestedDeviceName,
+          currentDestinationDeviceName: currentDeviceName
+        ) else {
+          continue
+        }
+
+        guard let rawBaseFileName = fileNameResolver.rawBaseFileName(
+          typeName: previewType.typeName,
+          previewIndex: previewIndex
+        ) else {
+          continue
+        }
+
+        imageNames.append(FileNameUtils.imageFileName(from: rawBaseFileName))
+      }
+    }
+
+    return imageNames
   }
 
   /// Tests a specific preview by rendering it and generating a snapshot. Subclasses should NOT override this method.
@@ -288,11 +334,11 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
       return
     }
 
-    let baseFileName = SnapshotCIExportCoordinator.sanitize(rawBaseFileName)
+    let imageFileName = FileNameUtils.imageFileName(from: rawBaseFileName)
     if let coordinator = Self.ciExportCoordinator {
       let colorSchemeValue = result.colorScheme.flatMap { $0.stringValue }
       let context = SnapshotContext(
-        baseFileName: baseFileName,
+        imageFileName: imageFileName,
         testName: name,
         typeName: previewType.typeName,
         typeDisplayName: previewType.displayName,
@@ -312,7 +358,7 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
     } else {
       do {
         let attachment = try XCTAttachment(image: result.image.get())
-        attachment.name = baseFileName
+        attachment.name = String(imageFileName.dropLast(".png".count))
         attachment.lifetime = .keepAlways
         add(attachment)
       } catch {

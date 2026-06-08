@@ -72,7 +72,7 @@ open class PreviewBaseTest: XCTestCase {
       previews = []
       var i = 0
 
-      let currentDeviceName = ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] ?? ProcessInfo.processInfo.environment["SIMULATOR_MODEL_IDENTIFIER"]
+      let currentDeviceName = SnapshotPreviewDestination.currentDeviceName()
 
       for discoveredPreview in discoveredPreviews {
         let typeName = discoveredPreview.typeName
@@ -80,12 +80,12 @@ open class PreviewBaseTest: XCTestCase {
         let count = discoveredPreview.numberOfPreviews
 
         for j in 0..<count {
-          // Filter out device specific previews whose device name doesn't match the currently selected one
-          if currentDeviceName != nil {
-            let specifiedPreviewDevice = discoveredPreview.devices[j]
-            guard specifiedPreviewDevice.isEmpty || specifiedPreviewDevice == currentDeviceName else {
-              continue
-            }
+          if !SnapshotPreviewDeviceFilter.shouldInclude(
+            discoveredPreview: discoveredPreview,
+            index: j,
+            currentDestinationDeviceName: currentDeviceName
+          ) {
+            continue
           }
 
           let orientation = discoveredPreview.orientations[j]

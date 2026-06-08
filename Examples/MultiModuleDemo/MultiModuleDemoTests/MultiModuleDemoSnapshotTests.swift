@@ -7,6 +7,10 @@ final class MultiModuleDemoSnapshotSingleModuleAllowTests: SnapshotTest {
   override class func snapshotPreviewModules() -> [String]? {
     return ["ModuleA"]
   }
+
+  override class func excludedSnapshotPreviews() -> [String]? {
+    return ["ModuleA/ModuleAViews.swift:ModuleA Button"]
+  }
 }
 
 final class MultiModuleDemoSnapshotMultipleModuleAllowTests: SnapshotTest {
