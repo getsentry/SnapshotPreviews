@@ -14,7 +14,12 @@ import SnapshotSharedModels
 // MARK: - Snapshot Context
 
 struct SnapshotContext: Sendable {
-  let baseFileName: String
+  let imageFileName: String
+
+  var sidecarFileName: String {
+    "\(String(imageFileName.dropLast(".png".count))).json"
+  }
+  
   let testName: String
   let typeName: String
   let typeDisplayName: String
@@ -219,27 +224,6 @@ final class SnapshotCIExportCoordinator: NSObject, XCTestObservation {
     }
   }
 
-  // MARK: - Filename Sanitization
-
-  static func sanitize(_ raw: String) -> String {
-    var result = ""
-    var lastWasUnderscore = false
-
-    for c in raw {
-      if c.isLetter || c.isNumber || c == "." || c == "-" || c == "_" {
-        result.append(c)
-        lastWasUnderscore = false
-      } else if !lastWasUnderscore {
-        result.append("_")
-        lastWasUnderscore = true
-      }
-    }
-
-    result = result.trimmingCharacters(in: CharacterSet(charactersIn: "_.-"))
-
-    return result.isEmpty ? "snapshot" : result
-  }
-
   // MARK: - Export
 
   static func canonicalGroup(
@@ -286,8 +270,8 @@ final class SnapshotCIExportCoordinator: NSObject, XCTestObservation {
     result: SnapshotResult,
     context: SnapshotContext
   ) {
-    let pngFileName = "\(context.baseFileName).png"
-    let jsonFileName = "\(context.baseFileName).json"
+    let pngFileName = context.imageFileName
+    let jsonFileName = context.sidecarFileName
 
     let displayName = Self.canonicalDisplayName(for: context)
     let group = Self.canonicalGroup(

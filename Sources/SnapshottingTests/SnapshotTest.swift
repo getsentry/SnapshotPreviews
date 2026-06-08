@@ -279,8 +279,7 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
           continue
         }
 
-        let baseFileName = SnapshotCIExportCoordinator.sanitize(rawBaseFileName)
-        imageNames.append("\(baseFileName).png")
+        imageNames.append(FileNameUtils.imageFileName(from: rawBaseFileName))
       }
     }
 
@@ -335,11 +334,11 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
       return
     }
 
-    let baseFileName = SnapshotCIExportCoordinator.sanitize(rawBaseFileName)
+    let imageFileName = FileNameUtils.imageFileName(from: rawBaseFileName)
     if let coordinator = Self.ciExportCoordinator {
       let colorSchemeValue = result.colorScheme.flatMap { $0.stringValue }
       let context = SnapshotContext(
-        baseFileName: baseFileName,
+        imageFileName: imageFileName,
         testName: name,
         typeName: previewType.typeName,
         typeDisplayName: previewType.displayName,
@@ -359,7 +358,7 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
     } else {
       do {
         let attachment = try XCTAttachment(image: result.image.get())
-        attachment.name = baseFileName
+        attachment.name = String(imageFileName.dropLast(".png".count))
         attachment.lifetime = .keepAlways
         add(attachment)
       } catch {

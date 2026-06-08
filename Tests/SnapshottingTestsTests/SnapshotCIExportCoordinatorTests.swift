@@ -46,39 +46,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     XCTAssertTrue(FileManager.default.fileExists(atPath: tempDir.path))
   }
 
-  // MARK: - Filename Sanitization
-
-  func testSanitizeReplacesUnsafeCharacters() {
-    let result = SnapshotCIExportCoordinator.sanitize("My/View:Preview 1")
-    let unsafeChars = CharacterSet(charactersIn: "/\\: \"'<>|?*")
-    XCTAssertNil(result.rangeOfCharacter(from: unsafeChars))
-  }
-
-  func testSanitizeIsDeterministic() {
-    let a = SnapshotCIExportCoordinator.sanitize("Some/View:Name")
-    let b = SnapshotCIExportCoordinator.sanitize("Some/View:Name")
-    XCTAssertEqual(a, b)
-  }
-
-  func testSanitizeCollapsesRepeatedUnsafeCharacters() {
-    let result = SnapshotCIExportCoordinator.sanitize("A///B   C")
-    XCTAssertFalse(result.contains("__"), "Consecutive unsafe chars should collapse to a single underscore")
-  }
-
-  func testSanitizePreservesExistingUnderscores() {
-    let result = SnapshotCIExportCoordinator.sanitize("A___B")
-    XCTAssertEqual(result, "A___B", "Underscores in the input should be preserved as-is")
-  }
-
-  func testSanitizeFallsBackForEmptyResult() {
-    let result = SnapshotCIExportCoordinator.sanitize("///")
-    XCTAssertEqual(result, "snapshot")
-  }
-
-  func testSanitizePreservesAlphanumericAndSafeChars() {
-    let result = SnapshotCIExportCoordinator.sanitize("Hello_World-2.0")
-    XCTAssertEqual(result, "Hello_World-2.0")
-  }
+  // MARK: - Raw Base File Names
 
   func testRawBaseFileNameUsesDisplayNameWhenUniqueForPreviewProvider() {
     let fileName = makeRawBaseFileName(
@@ -184,8 +152,8 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let jsonURL = tempDir.appendingPathComponent("\(context.baseFileName).json")
-    let pngURL = tempDir.appendingPathComponent("\(context.baseFileName).png")
+    let jsonURL = tempDir.appendingPathComponent(context.sidecarFileName)
+    let pngURL = tempDir.appendingPathComponent(context.imageFileName)
 
     XCTAssertTrue(FileManager.default.fileExists(atPath: jsonURL.path))
     XCTAssertTrue(FileManager.default.fileExists(atPath: pngURL.path))
@@ -205,7 +173,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
 
     XCTAssertEqual(json["display_name"] as? String, "Dark Mode")
     XCTAssertEqual(json["group"] as? String, "Login Screen")
@@ -225,7 +193,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
 
     XCTAssertEqual(json["group"] as? String, "Feature/LoginView.swift")
   }
@@ -242,7 +210,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
 
     XCTAssertEqual(json["display_name"] as? String, "At line #42")
   }
@@ -260,7 +228,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
 
     XCTAssertEqual(json["display_name"] as? String, "0")
   }
@@ -279,7 +247,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
 
     XCTAssertEqual(json["group"] as? String, "MyModule.TestView_Previews")
   }
@@ -295,7 +263,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
     let nestedContext = try XCTUnwrap(json["context"] as? [String: Any])
     let preview = try XCTUnwrap(nestedContext["preview"] as? [String: Any])
 
@@ -327,7 +295,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
     let tags = try XCTUnwrap(json["tags"] as? [String: String])
 
     XCTAssertEqual(tags["component"], "button")
@@ -352,7 +320,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
     let nestedContext = try XCTUnwrap(json["context"] as? [String: Any])
     let fixture = try XCTUnwrap(nestedContext["fixture"] as? [String: Any])
 
@@ -375,7 +343,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
     let nestedContext = try XCTUnwrap(json["context"] as? [String: Any])
 
     XCTAssertEqual(nestedContext["test_name"] as? String, "custom-test-name")
@@ -397,7 +365,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeSuccessResult(), context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
     let diffThreshold = try XCTUnwrap(json["diff_threshold"] as? Double)
 
     XCTAssertEqual(diffThreshold, 0.2, accuracy: 0.000_1)
@@ -415,7 +383,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
       context: context)
     coordinator.drain()
 
-    let json = try readJSON(forBaseFileName: context.baseFileName)
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
     let diffThreshold = try XCTUnwrap(json["diff_threshold"] as? Double)
 
     XCTAssertEqual(diffThreshold, 0.2, accuracy: 0.000_1)
@@ -430,8 +398,8 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.enqueueExport(result: makeFailureResult(), context: context)
     coordinator.drain()
 
-    XCTAssertFalse(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent("\(context.baseFileName).png").path))
-    XCTAssertFalse(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent("\(context.baseFileName).json").path))
+    XCTAssertFalse(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent(context.imageFileName).path))
+    XCTAssertFalse(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent(context.sidecarFileName).path))
   }
 
   // MARK: - Drain Semantics
@@ -444,7 +412,7 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.drain()
     coordinator.drain()
 
-    XCTAssertTrue(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent("\(context.baseFileName).json").path))
+    XCTAssertTrue(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent(context.sidecarFileName).path))
   }
 
   func testDrainOnEmptyQueueDoesNotCrash() {
@@ -471,8 +439,8 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     coordinator.drain()
 
     for context in contexts {
-      XCTAssertTrue(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent("\(context.baseFileName).png").path))
-      XCTAssertTrue(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent("\(context.baseFileName).json").path))
+      XCTAssertTrue(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent(context.imageFileName).path))
+      XCTAssertTrue(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent(context.sidecarFileName).path))
     }
   }
 }
@@ -481,8 +449,8 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
 
 extension SnapshotCIExportCoordinatorTests {
 
-  private func readJSON(forBaseFileName baseFileName: String) throws -> [String: Any] {
-    let data = try Data(contentsOf: tempDir.appendingPathComponent("\(baseFileName).json"))
+  private func readJSON(forSidecarFileName sidecarFileName: String) throws -> [String: Any] {
+    let data = try Data(contentsOf: tempDir.appendingPathComponent(sidecarFileName))
     return try JSONSerialization.jsonObject(with: data) as! [String: Any]
   }
 
@@ -520,7 +488,7 @@ extension SnapshotCIExportCoordinatorTests {
     additionalContext: [String: SnapshotMetadataValue] = [:]
   ) -> SnapshotContext {
     SnapshotContext(
-      baseFileName: baseFileName,
+      imageFileName: FileNameUtils.imageFileName(from: baseFileName),
       testName: "-[MyTests testPreview]",
       typeName: typeName,
       typeDisplayName: typeDisplayName,
