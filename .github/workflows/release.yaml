@@ -18,7 +18,6 @@ jobs:
         run: bash build.sh
       - name: Zip xcframeworks
         run: |
-          rm -f *.xcframework.zip
           for framework_path in XCFrameworks/*.xcframework
           do
             framework="$(basename "$framework_path")"
