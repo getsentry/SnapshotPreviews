@@ -1,0 +1,318 @@
+name: Upload iOS snapshots to Sentry
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    paths:
+      - Examples/MultiModuleDemo/**
+      - Sources/**
+      - Package.swift
+      - .github/workflows/ios_sentry_upload_snapshots.yml
+
+env:
+  DERIVED_DATA_PATH: ${{ github.workspace }}/DerivedData-snapshot-upload
+  SNAPSHOT_UPLOAD_BASE_DIR: ${{ github.workspace }}/snapshot-images
+  BUILD_PRODUCTS_ARCHIVE: ${{ github.workspace }}/snapshot-build-products.tar.gz
+  ALL_IMAGE_NAMES_FILE: ${{ github.workspace }}/snapshot-images/all-image-names.txt
+  XCTESTRUN_FILENAME: MultiModuleDemoTests.xctestrun
+  SNAPSHOT_SCHEME: MultiModuleDemo
+  SNAPSHOT_PROJECT: Examples/MultiModuleDemo/MultiModuleDemo.xcodeproj
+  SNAPSHOT_DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro Max,arch=arm64
+  SENTRY_APP_ID: ${{ secrets.SENTRY_APP_ID }}
+
+jobs:
+  select_snapshot_tests:
+    runs-on: ubuntu-latest
+    outputs:
+      selected_tests: ${{ steps.select.outputs.selected_tests }}
+      selected_tests_json: ${{ steps.select.outputs.selected_tests_json }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Select snapshot tests
+        id: select
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          declare -a tests=()
+
+          add_test() {
+            local test="$1"
+            for existing in "${tests[@]}"; do
+              if [ "${existing}" = "${test}" ]; then
+                return
+              fi
+            done
+            tests+=("${test}")
+          }
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            changed_files="$(git diff --name-only "${BASE_SHA}" "${HEAD_SHA}")"
+          else
+            changed_files=""
+          fi
+
+          if [ "${{ github.event_name }}" != "pull_request" ] || [ -z "${changed_files}" ]; then
+            add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
+            add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
+          else
+            while IFS= read -r file; do
+              case "${file}" in
+                Examples/MultiModuleDemo/ModuleA/*)
+                  add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
+                  ;;
+                Examples/MultiModuleDemo/ModuleB/*|Examples/MultiModuleDemo/ModuleC/*)
+                  add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
+                  ;;
+                Examples/MultiModuleDemo/*|Sources/*|Package.swift)
+                  add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
+                  add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
+                  ;;
+              esac
+            done <<< "${changed_files}"
+          fi
+
+          if [ "${#tests[@]}" -eq 0 ]; then
+            add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
+            add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
+          fi
+
+          selected_tests="$(IFS=,; echo "${tests[*]}")"
+          selected_tests_json="$(printf '%s\n' "${tests[@]}" | jq -R . | jq -cs .)"
+
+          echo "selected_tests=${selected_tests}" >> "${GITHUB_OUTPUT}"
+          echo "selected_tests_json=${selected_tests_json}" >> "${GITHUB_OUTPUT}"
+          printf 'Selected snapshot tests:\n%s\n' "${tests[@]}"
+
+  build_for_testing:
+    runs-on: macos-26
+    needs: select_snapshot_tests
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.4.app
+
+      - name: Prepare DerivedData directory
+        run: mkdir -p "${DERIVED_DATA_PATH}"
+
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ${{ env.DERIVED_DATA_PATH }}/SourcePackages
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: ${{ runner.os }}-spm-
+
+      - name: Build snapshot tests
+        run: |
+          xcodebuild build-for-testing \
+            -project "${SNAPSHOT_PROJECT}" \
+            -scheme "${SNAPSHOT_SCHEME}" \
+            -sdk iphonesimulator \
+            -destination "${SNAPSHOT_DESTINATION}" \
+            -resultBundlePath SnapshotBuildForTesting.xcresult \
+            -derivedDataPath "${DERIVED_DATA_PATH}" \
+            -skipPackagePluginValidation \
+            ONLY_ACTIVE_ARCH=YES \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Normalize xctestrun path
+        run: |
+          XCTESTRUN_SOURCE="$(find "${DERIVED_DATA_PATH}/Build/Products" -name '*.xctestrun' -print -quit)"
+          if [ -z "${XCTESTRUN_SOURCE}" ]; then
+            echo "No .xctestrun file found under ${DERIVED_DATA_PATH}/Build/Products" >&2
+            exit 1
+          fi
+
+          cp "${XCTESTRUN_SOURCE}" "${DERIVED_DATA_PATH}/Build/Products/${XCTESTRUN_FILENAME}"
+
+      - name: Archive test products
+        run: tar -C "${DERIVED_DATA_PATH}/Build" -czf "${BUILD_PRODUCTS_ARCHIVE}" Products
+
+      - name: Upload build products artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshot-build-products
+          path: ${{ env.BUILD_PRODUCTS_ARCHIVE }}
+          if-no-files-found: error
+
+  generate_snapshots:
+    runs-on: macos-26
+    needs: [select_snapshot_tests, build_for_testing]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - simulator_name: iPhone 17 Pro Max
+            slug: iphone-17-pro-max
+
+    env:
+      TEST_RUNNER_SNAPSHOTS_EXPORT_DIR: ${{ github.workspace }}/snapshot-images/${{ matrix.slug }}
+      SELECTED_SNAPSHOT_TESTS: ${{ needs.select_snapshot_tests.outputs.selected_tests }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.4.app
+
+      - name: Download build products artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: snapshot-build-products
+          path: ${{ github.workspace }}
+
+      - name: Extract test products
+        run: |
+          mkdir -p "${DERIVED_DATA_PATH}/Build"
+          tar -C "${DERIVED_DATA_PATH}/Build" -xzf "${BUILD_PRODUCTS_ARCHIVE}"
+
+      - name: Boot simulator
+        run: xcrun simctl boot "${{ matrix.simulator_name }}" || true
+
+      - name: Prepare snapshot export directory
+        run: mkdir -p "${TEST_RUNNER_SNAPSHOTS_EXPORT_DIR}"
+
+      - name: Generate snapshot images
+        run: |
+          set -euo pipefail
+          only_testing_args=()
+          IFS=',' read -ra tests <<< "${SELECTED_SNAPSHOT_TESTS}"
+          for test in "${tests[@]}"; do
+            only_testing_args+=("-only-testing:${test}")
+          done
+
+          xcodebuild test-without-building \
+            -xctestrun "${DERIVED_DATA_PATH}/Build/Products/${XCTESTRUN_FILENAME}" \
+            -destination "platform=iOS Simulator,name=${{ matrix.simulator_name }},arch=arm64" \
+            "${only_testing_args[@]}" \
+            -resultBundlePath "SnapshotResults-${{ matrix.slug }}.xcresult"
+
+      - name: Upload snapshots artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshots-${{ matrix.slug }}
+          path: ${{ env.TEST_RUNNER_SNAPSHOTS_EXPORT_DIR }}
+          if-no-files-found: error
+
+  generate_image_names:
+    runs-on: macos-26
+    needs: build_for_testing
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.4.app
+
+      - name: Download build products artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: snapshot-build-products
+          path: ${{ github.workspace }}
+
+      - name: Extract test products
+        run: |
+          mkdir -p "${DERIVED_DATA_PATH}/Build"
+          tar -C "${DERIVED_DATA_PATH}/Build" -xzf "${BUILD_PRODUCTS_ARCHIVE}"
+
+      - name: Boot simulator
+        run: xcrun simctl boot "iPhone 17 Pro Max" || true
+
+      - name: Generate all image names
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "${ALL_IMAGE_NAMES_FILE}")"
+          name_files=()
+          tests=(
+            "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
+            "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
+          )
+
+          for index in "${!tests[@]}"; do
+            name_file="${RUNNER_TEMP}/snapshot-names-${index}.txt"
+            name_files+=("${name_file}")
+
+            TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FILE="${name_file}" \
+            xcodebuild test-without-building \
+              -xctestrun "${DERIVED_DATA_PATH}/Build/Products/${XCTESTRUN_FILENAME}" \
+              -destination "${SNAPSHOT_DESTINATION}" \
+              -only-testing:"${tests[$index]}" \
+              -resultBundlePath "SnapshotImageNames-${index}.xcresult"
+          done
+
+          cat "${name_files[@]}" | sort -u > "${ALL_IMAGE_NAMES_FILE}"
+          cat "${ALL_IMAGE_NAMES_FILE}"
+
+      - name: Upload image names artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshot-image-names
+          path: ${{ env.ALL_IMAGE_NAMES_FILE }}
+          if-no-files-found: error
+
+  upload_snapshots:
+    runs-on: macos-26
+    needs: [generate_snapshots, generate_image_names]
+
+    steps:
+      - name: Download generated snapshots
+        uses: actions/download-artifact@v5
+        with:
+          path: ${{ env.SNAPSHOT_UPLOAD_BASE_DIR }}
+          pattern: snapshots-*
+
+      - name: Download image names
+        uses: actions/download-artifact@v5
+        with:
+          name: snapshot-image-names
+          path: ${{ github.workspace }}/snapshot-image-names
+
+      - name: List aggregated snapshot files
+        run: |
+          echo "Generated snapshot files:"
+          find "${SNAPSHOT_UPLOAD_BASE_DIR}" -type f | sort
+          echo
+          echo "All image names:"
+          cat "${{ github.workspace }}/snapshot-image-names/all-image-names.txt"
+          echo
+          echo "Total PNG images: $(find "${SNAPSHOT_UPLOAD_BASE_DIR}" -type f -name '*.png' | wc -l | tr -d ' ')"
+
+      - name: Install sentry-cli
+        run: curl -sL https://sentry.io/get-cli/ | bash
+
+      - name: Upload snapshots to Sentry
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          if [ -z "${SENTRY_AUTH_TOKEN}" ] || [ -z "${SENTRY_APP_ID}" ]; then
+            echo "SENTRY_AUTH_TOKEN and SENTRY_APP_ID secrets are required" >&2
+            exit 1
+          fi
+
+          sentry-cli build snapshots "${SNAPSHOT_UPLOAD_BASE_DIR}" \
+            --auth-token "${SENTRY_AUTH_TOKEN}" \
+            --app-id "${SENTRY_APP_ID}" \
+            --all-image-file-names-file "${{ github.workspace }}/snapshot-image-names/all-image-names.txt"
