@@ -285,6 +285,7 @@ jobs:
         with:
           path: ${{ env.SNAPSHOT_UPLOAD_BASE_DIR }}
           pattern: snapshots-*
+          merge-multiple: true
 
       - name: Download image names
         uses: actions/download-artifact@v5
