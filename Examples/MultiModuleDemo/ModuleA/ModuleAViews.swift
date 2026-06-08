@@ -22,7 +22,7 @@ public struct ModuleALabel: View {
 
   public var body: some View {
     Text(text)
-      .font(.headline)
+      .font(.title)
       .padding(.horizontal, 12)
       .padding(.vertical, 8)
       .background(.thinMaterial, in: Capsule())
