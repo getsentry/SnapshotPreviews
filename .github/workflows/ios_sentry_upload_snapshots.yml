@@ -27,6 +27,10 @@ env:
   SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
 jobs:
+  # Decide which snapshot test classes need to render images for this run.
+  # Pull requests use changed file paths to run only the snapshot test
+  # cases that cover the affected code.
+  # Pushes to main, empty diffs, and broad changes fall back to the full suite.
   select_snapshot_tests:
     runs-on: ubuntu-latest
     outputs:
@@ -57,18 +61,14 @@ jobs:
             tests+=("${test}")
           }
 
+          # For pull requests, narrow the test set to the modules that changed.
+          # For any other event (or an empty diff), the fallback below selects
+          # every snapshot test.
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"
             HEAD_SHA="${{ github.event.pull_request.head.sha }}"
             changed_files="$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}")"
-          else
-            changed_files=""
-          fi
 
-          if [ "${{ github.event_name }}" != "pull_request" ] || [ -z "${changed_files}" ]; then
-            add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
-            add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
-          else
             while IFS= read -r file; do
               case "${file}" in
                 Examples/MultiModuleDemo/ModuleA/*)
@@ -85,6 +85,7 @@ jobs:
             done <<< "${changed_files}"
           fi
 
+          # Fallback: run the full suite when nothing module-specific was selected.
           if [ "${#tests[@]}" -eq 0 ]; then
             add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
             add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
@@ -97,6 +98,9 @@ jobs:
           echo "selected_tests_json=${selected_tests_json}" >> "${GITHUB_OUTPUT}"
           printf 'Selected snapshot tests:\n%s\n' "${tests[@]}"
 
+  # Compile the demo app and snapshot test bundle once, then archive the build
+  # products. Downstream jobs reuse this artifact with `test-without-building`
+  # so each shard does not repeat the expensive compile step.
   build_for_testing:
     runs-on: macos-26
     needs: select_snapshot_tests
@@ -155,6 +159,9 @@ jobs:
           path: ${{ env.BUILD_PRODUCTS_ARCHIVE }}
           if-no-files-found: error
 
+  # Render only the selected snapshot test classes. This is the selective part
+  # of the workflow: each chosen test class runs as an independent matrix job
+  # and exports PNG/JSON snapshot files for upload.
   generate_snapshots:
     runs-on: macos-26
     needs: [select_snapshot_tests, build_for_testing]
@@ -211,6 +218,9 @@ jobs:
           path: ${{ env.TEST_RUNNER_SNAPSHOTS_EXPORT_DIR }}
           if-no-files-found: error
 
+  # Produce the complete set of possible snapshot image names. This always runs
+  # all snapshot test classes, even when image rendering is selective, so Sentry
+  # can distinguish skipped snapshots from removed snapshots during comparison.
   generate_image_names:
     runs-on: macos-26
     needs: build_for_testing
@@ -270,6 +280,9 @@ jobs:
           path: ${{ env.IMAGE_NAMES_FILE }}
           if-no-files-found: error
 
+  # Collect rendered snapshot artifacts and per-shard image-name manifests,
+  # merge the manifests into one complete file, then upload the selective build
+  # to Sentry with enough context for snapshot comparison.
   upload_snapshots:
     runs-on: macos-26
     needs: [generate_snapshots, generate_image_names]
@@ -294,6 +307,9 @@ jobs:
           pattern: snapshot-image-names-*
           merge-multiple: true
 
+      # Combine the per-test-case image-name files into one sorted, deduplicated
+      # manifest. Sentry uses this complete manifest to know which snapshots
+      # exist even when this workflow only rendered a selected subset of tests.
       - name: Aggregate image names
         run: |
           set -euo pipefail
@@ -323,6 +339,9 @@ jobs:
       - name: Install sentry-cli
         run: curl -sL https://sentry.io/get-cli/ | bash
 
+      # Upload the rendered snapshot files. The --all-image-file-names-file
+      # flag points Sentry at the full manifest, which lets Sentry distinguish
+      # snapshots skipped by selective testing from snapshots that were removed.
       - name: Upload snapshots to Sentry
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
