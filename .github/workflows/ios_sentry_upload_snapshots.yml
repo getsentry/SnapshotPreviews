@@ -11,6 +11,9 @@ on:
       - Package.swift
       - .github/workflows/ios_sentry_upload_snapshots.yml
 
+permissions:
+  contents: read
+
 env:
   DERIVED_DATA_PATH: ${{ github.workspace }}/DerivedData-snapshot-upload
   SNAPSHOT_UPLOAD_BASE_DIR: ${{ github.workspace }}/snapshot-images
@@ -21,6 +24,7 @@ env:
   SNAPSHOT_PROJECT: Examples/MultiModuleDemo/MultiModuleDemo.xcodeproj
   SNAPSHOT_DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro Max,arch=arm64
   SENTRY_APP_ID: ${{ secrets.SENTRY_APP_ID }}
+  SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
 jobs:
   select_snapshot_tests:
@@ -307,12 +311,13 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
-          if [ -z "${SENTRY_AUTH_TOKEN}" ] || [ -z "${SENTRY_APP_ID}" ]; then
-            echo "SENTRY_AUTH_TOKEN and SENTRY_APP_ID secrets are required" >&2
+          if [ -z "${SENTRY_AUTH_TOKEN}" ] || [ -z "${SENTRY_APP_ID}" ] || [ -z "${SENTRY_PROJECT}" ]; then
+            echo "SENTRY_AUTH_TOKEN, SENTRY_APP_ID, and SENTRY_PROJECT secrets are required" >&2
             exit 1
           fi
 
           sentry-cli build snapshots "${SNAPSHOT_UPLOAD_BASE_DIR}" \
             --auth-token "${SENTRY_AUTH_TOKEN}" \
+            --project "${SENTRY_PROJECT}" \
             --app-id "${SENTRY_APP_ID}" \
             --all-image-file-names-file "${{ github.workspace }}/snapshot-image-names/all-image-names.txt"
