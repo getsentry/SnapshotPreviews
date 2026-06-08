@@ -1,0 +1,358 @@
+name: Upload iOS snapshots to Sentry
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    paths:
+      - Examples/MultiModuleDemo/**
+      - Sources/**
+      - Package.swift
+      - .github/workflows/ios_sentry_upload_snapshots.yml
+
+permissions:
+  contents: read
+
+env:
+  DERIVED_DATA_PATH: ${{ github.workspace }}/DerivedData-snapshot-upload
+  SNAPSHOT_UPLOAD_BASE_DIR: ${{ github.workspace }}/snapshot-images
+  BUILD_PRODUCTS_ARCHIVE: ${{ github.workspace }}/snapshot-build-products.tar.gz
+  ALL_IMAGE_NAMES_FILE: ${{ github.workspace }}/snapshot-images/all-image-names.txt
+  XCTESTRUN_FILENAME: MultiModuleDemoTests.xctestrun
+  SNAPSHOT_SCHEME: MultiModuleDemo
+  SNAPSHOT_PROJECT: Examples/MultiModuleDemo/MultiModuleDemo.xcodeproj
+  SNAPSHOT_DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro Max,arch=arm64
+  SENTRY_APP_ID: ${{ secrets.SENTRY_APP_ID }}
+  SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+
+jobs:
+  # Decide which snapshot test classes need to render images for this run.
+  # Pull requests use changed file paths to run only the snapshot test
+  # cases that cover the affected code.
+  # Pushes to main, empty diffs, and broad changes fall back to the full suite.
+  select_snapshot_tests:
+    runs-on: ubuntu-latest
+    outputs:
+      selected_tests: ${{ steps.select.outputs.selected_tests }}
+      selected_tests_json: ${{ steps.select.outputs.selected_tests_json }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Select snapshot tests
+        id: select
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          declare -a tests=()
+
+          add_test() {
+            local test="$1"
+            for existing in "${tests[@]}"; do
+              if [ "${existing}" = "${test}" ]; then
+                return
+              fi
+            done
+            tests+=("${test}")
+          }
+
+          # For pull requests, narrow the test set to the modules that changed.
+          # For any other event (or an empty diff), the fallback below selects
+          # every snapshot test.
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            changed_files="$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}")"
+
+            while IFS= read -r file; do
+              case "${file}" in
+                Examples/MultiModuleDemo/ModuleA/*)
+                  add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
+                  ;;
+                Examples/MultiModuleDemo/ModuleB/*|Examples/MultiModuleDemo/ModuleC/*)
+                  add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
+                  ;;
+                Examples/MultiModuleDemo/*|Sources/*|Package.swift)
+                  add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
+                  add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
+                  ;;
+              esac
+            done <<< "${changed_files}"
+          fi
+
+          # Fallback: run the full suite when nothing module-specific was selected.
+          if [ "${#tests[@]}" -eq 0 ]; then
+            add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests"
+            add_test "MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests"
+          fi
+
+          selected_tests="$(IFS=,; echo "${tests[*]}")"
+          selected_tests_json="$(printf '%s\n' "${tests[@]}" | jq -R . | jq -cs 'map({name: ., slug: (split("/")[-1] | gsub("[^A-Za-z0-9_-]"; "-"))})')"
+
+          echo "selected_tests=${selected_tests}" >> "${GITHUB_OUTPUT}"
+          echo "selected_tests_json=${selected_tests_json}" >> "${GITHUB_OUTPUT}"
+          printf 'Selected snapshot tests:\n%s\n' "${tests[@]}"
+
+  # Compile the demo app and snapshot test bundle once, then archive the build
+  # products. Downstream jobs reuse this artifact with `test-without-building`
+  # so each shard does not repeat the expensive compile step.
+  build_for_testing:
+    runs-on: macos-26
+    needs: select_snapshot_tests
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.4.app
+
+      - name: Prepare DerivedData directory
+        run: mkdir -p "${DERIVED_DATA_PATH}"
+
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ${{ env.DERIVED_DATA_PATH }}/SourcePackages
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: ${{ runner.os }}-spm-
+
+      - name: Build snapshot tests
+        run: |
+          xcodebuild build-for-testing \
+            -project "${SNAPSHOT_PROJECT}" \
+            -scheme "${SNAPSHOT_SCHEME}" \
+            -sdk iphonesimulator \
+            -destination "${SNAPSHOT_DESTINATION}" \
+            -resultBundlePath SnapshotBuildForTesting.xcresult \
+            -derivedDataPath "${DERIVED_DATA_PATH}" \
+            -skipPackagePluginValidation \
+            ONLY_ACTIVE_ARCH=YES \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Normalize xctestrun path
+        run: |
+          XCTESTRUN_SOURCE="$(find "${DERIVED_DATA_PATH}/Build/Products" -name '*.xctestrun' -print -quit)"
+          if [ -z "${XCTESTRUN_SOURCE}" ]; then
+            echo "No .xctestrun file found under ${DERIVED_DATA_PATH}/Build/Products" >&2
+            exit 1
+          fi
+
+          cp "${XCTESTRUN_SOURCE}" "${DERIVED_DATA_PATH}/Build/Products/${XCTESTRUN_FILENAME}"
+
+      - name: Archive test products
+        run: tar -C "${DERIVED_DATA_PATH}/Build" -czf "${BUILD_PRODUCTS_ARCHIVE}" Products
+
+      - name: Upload build products artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshot-build-products
+          path: ${{ env.BUILD_PRODUCTS_ARCHIVE }}
+          if-no-files-found: error
+
+  # Render only the selected snapshot test classes. This is the selective part
+  # of the workflow: each chosen test class runs as an independent matrix job
+  # and exports PNG/JSON snapshot files for upload.
+  generate_snapshots:
+    runs-on: macos-26
+    needs: [select_snapshot_tests, build_for_testing]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        snapshot_test: ${{ fromJSON(needs.select_snapshot_tests.outputs.selected_tests_json) }}
+        simulator:
+          - name: iPhone 17 Pro Max
+            slug: iphone-17-pro-max
+
+    env:
+      TEST_RUNNER_SNAPSHOTS_EXPORT_DIR: ${{ github.workspace }}/snapshot-images/${{ matrix.simulator.slug }}/${{ matrix.snapshot_test.slug }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.4.app
+
+      - name: Download build products artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: snapshot-build-products
+          path: ${{ github.workspace }}
+
+      - name: Extract test products
+        run: |
+          mkdir -p "${DERIVED_DATA_PATH}/Build"
+          tar -C "${DERIVED_DATA_PATH}/Build" -xzf "${BUILD_PRODUCTS_ARCHIVE}"
+
+      - name: Boot simulator
+        run: xcrun simctl boot "${{ matrix.simulator.name }}" || true
+
+      - name: Prepare snapshot export directory
+        run: mkdir -p "${TEST_RUNNER_SNAPSHOTS_EXPORT_DIR}"
+
+      - name: Generate snapshot images
+        run: |
+          xcodebuild test-without-building \
+            -xctestrun "${DERIVED_DATA_PATH}/Build/Products/${XCTESTRUN_FILENAME}" \
+            -destination "platform=iOS Simulator,name=${{ matrix.simulator.name }},arch=arm64" \
+            -only-testing:"${{ matrix.snapshot_test.name }}" \
+            -resultBundlePath "SnapshotResults-${{ matrix.simulator.slug }}-${{ matrix.snapshot_test.slug }}.xcresult"
+
+      - name: Upload snapshots artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshots-${{ matrix.simulator.slug }}-${{ matrix.snapshot_test.slug }}
+          path: ${{ env.TEST_RUNNER_SNAPSHOTS_EXPORT_DIR }}
+          if-no-files-found: error
+
+  # Produce the complete set of possible snapshot image names. This always runs
+  # all snapshot test classes, even when image rendering is selective, so Sentry
+  # can distinguish skipped snapshots from removed snapshots during comparison.
+  generate_image_names:
+    runs-on: macos-26
+    needs: build_for_testing
+
+    strategy:
+      fail-fast: false
+      matrix:
+        snapshot_test:
+          - name: MultiModuleDemoTests/MultiModuleDemoSnapshotSingleModuleAllowTests
+            slug: MultiModuleDemoSnapshotSingleModuleAllowTests
+          - name: MultiModuleDemoTests/MultiModuleDemoSnapshotMultipleModuleAllowTests
+            slug: MultiModuleDemoSnapshotMultipleModuleAllowTests
+
+    env:
+      IMAGE_NAMES_FILE: ${{ github.workspace }}/snapshot-image-names/all-image-names-${{ matrix.snapshot_test.slug }}.txt
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.4.app
+
+      - name: Download build products artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: snapshot-build-products
+          path: ${{ github.workspace }}
+
+      - name: Extract test products
+        run: |
+          mkdir -p "${DERIVED_DATA_PATH}/Build"
+          tar -C "${DERIVED_DATA_PATH}/Build" -xzf "${BUILD_PRODUCTS_ARCHIVE}"
+
+      - name: Boot simulator
+        run: xcrun simctl boot "iPhone 17 Pro Max" || true
+
+      - name: Generate all image names
+        run: |
+          mkdir -p "$(dirname "${IMAGE_NAMES_FILE}")"
+
+          TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FILE="${IMAGE_NAMES_FILE}" \
+          xcodebuild test-without-building \
+            -xctestrun "${DERIVED_DATA_PATH}/Build/Products/${XCTESTRUN_FILENAME}" \
+            -destination "${SNAPSHOT_DESTINATION}" \
+            -only-testing:"${{ matrix.snapshot_test.name }}" \
+            -resultBundlePath "SnapshotImageNames-${{ matrix.snapshot_test.slug }}.xcresult"
+
+          cat "${IMAGE_NAMES_FILE}"
+
+      - name: Upload image names artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshot-image-names-${{ matrix.snapshot_test.slug }}
+          path: ${{ env.IMAGE_NAMES_FILE }}
+          if-no-files-found: error
+
+  # Collect rendered snapshot artifacts and per-shard image-name manifests,
+  # merge the manifests into one complete file, then upload the selective build
+  # to Sentry with enough context for snapshot comparison.
+  upload_snapshots:
+    runs-on: macos-26
+    needs: [generate_snapshots, generate_image_names]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download generated snapshots
+        uses: actions/download-artifact@v5
+        with:
+          path: ${{ env.SNAPSHOT_UPLOAD_BASE_DIR }}
+          pattern: snapshots-*
+          merge-multiple: true
+
+      - name: Download image names
+        uses: actions/download-artifact@v5
+        with:
+          path: ${{ github.workspace }}/snapshot-image-names
+          pattern: snapshot-image-names-*
+          merge-multiple: true
+
+      # Combine the per-test-case image-name files into one sorted, deduplicated
+      # manifest. Sentry uses this complete manifest to know which snapshots
+      # exist even when this workflow only rendered a selected subset of tests.
+      - name: Aggregate image names
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "${ALL_IMAGE_NAMES_FILE}")"
+          image_name_files=()
+          while IFS= read -r file; do
+            image_name_files+=("${file}")
+          done < <(find "${{ github.workspace }}/snapshot-image-names" -type f -name '*.txt' | sort)
+
+          if [ "${#image_name_files[@]}" -eq 0 ]; then
+            echo "No image name files found" >&2
+            exit 1
+          fi
+
+          cat "${image_name_files[@]}" | sort -u > "${ALL_IMAGE_NAMES_FILE}"
+
+      - name: List aggregated snapshot files
+        run: |
+          echo "Generated snapshot files:"
+          find "${SNAPSHOT_UPLOAD_BASE_DIR}" -type f | sort
+          echo
+          echo "All image names:"
+          cat "${ALL_IMAGE_NAMES_FILE}"
+          echo
+          echo "Total PNG images: $(find "${SNAPSHOT_UPLOAD_BASE_DIR}" -type f -name '*.png' | wc -l | tr -d ' ')"
+
+      - name: Install sentry-cli
+        run: curl -sL https://sentry.io/get-cli/ | bash
+
+      # Upload the rendered snapshot files. The --all-image-file-names-file
+      # flag points Sentry at the full manifest, which lets Sentry distinguish
+      # snapshots skipped by selective testing from snapshots that were removed.
+      - name: Upload snapshots to Sentry
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          if [ -z "${SENTRY_AUTH_TOKEN}" ] || [ -z "${SENTRY_APP_ID}" ] || [ -z "${SENTRY_PROJECT}" ]; then
+            echo "SENTRY_AUTH_TOKEN, SENTRY_APP_ID, and SENTRY_PROJECT secrets are required" >&2
+            exit 1
+          fi
+
+          sentry-cli build snapshots "${SNAPSHOT_UPLOAD_BASE_DIR}" \
+            --auth-token "${SENTRY_AUTH_TOKEN}" \
+            --project "${SENTRY_PROJECT}" \
+            --app-id "${SENTRY_APP_ID}" \
+            --all-image-file-names-file "${ALL_IMAGE_NAMES_FILE}"
