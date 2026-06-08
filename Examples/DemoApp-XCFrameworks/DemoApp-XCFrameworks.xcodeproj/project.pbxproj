@@ -7,6 +7,54 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B2B491A2FD01D8B003221F3 /* SnapshottingTests.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49172FD01D81003221F3 /* SnapshottingTests.xcframework */; };
+		8B2B491B2FD01D8B003221F3 /* SnapshottingTests.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49172FD01D81003221F3 /* SnapshottingTests.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B491C2FD01D94003221F3 /* PreviewGallery.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49122FD01D81003221F3 /* PreviewGallery.xcframework */; };
+		8B2B491D2FD01D94003221F3 /* PreviewGallery.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49122FD01D81003221F3 /* PreviewGallery.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B491F2FD01D9F003221F3 /* SnapshottingTests.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49172FD01D81003221F3 /* SnapshottingTests.xcframework */; };
+		8B2B49202FD01D9F003221F3 /* SnapshottingTests.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49172FD01D81003221F3 /* SnapshottingTests.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B49222FD01DAA003221F3 /* SnapshottingTests.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49172FD01D81003221F3 /* SnapshottingTests.xcframework */; };
+		8B2B49232FD01DAA003221F3 /* SnapshottingTests.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49172FD01D81003221F3 /* SnapshottingTests.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B49252FD01DB3003221F3 /* SnapshotPreferences.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49132FD01D81003221F3 /* SnapshotPreferences.xcframework */; };
+		8B2B49282FD01DBD003221F3 /* PreviewGallery.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49122FD01D81003221F3 /* PreviewGallery.xcframework */; };
+		8B2B49292FD01DBD003221F3 /* PreviewGallery.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49122FD01D81003221F3 /* PreviewGallery.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B492A2FD01DC1003221F3 /* SnapshotPreferences.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49132FD01D81003221F3 /* SnapshotPreferences.xcframework */; };
+		8B2B492B2FD01DC1003221F3 /* SnapshotPreferences.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49132FD01D81003221F3 /* SnapshotPreferences.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B492C2FD01E1C003221F3 /* SnapshotPreviewsCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */; };
+		8B2B492D2FD01E1C003221F3 /* SnapshotPreviewsCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B492E2FD01E23003221F3 /* SnapshotSharedModels.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; };
+		8B2B492F2FD01E23003221F3 /* SnapshotSharedModels.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B49312FD01E8B003221F3 /* PreviewsSupport.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */; };
+		8B2B49322FD01EC1003221F3 /* SnapshotSharedModels.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; };
+		8B2B49342FD01EDD003221F3 /* PreviewsSupport.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */; };
+		8B2B49352FD01EDD003221F3 /* PreviewsSupport.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B49362FD01EDD003221F3 /* SnapshotPreferences.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49132FD01D81003221F3 /* SnapshotPreferences.xcframework */; };
+		8B2B49372FD01EDD003221F3 /* SnapshotPreferences.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49132FD01D81003221F3 /* SnapshotPreferences.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B49382FD01EDD003221F3 /* SnapshotPreviewsCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */; };
+		8B2B49392FD01EDD003221F3 /* SnapshotPreviewsCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B493A2FD01EDD003221F3 /* SnapshotSharedModels.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; };
+		8B2B493B2FD01EDD003221F3 /* SnapshotSharedModels.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B493C2FD01F1B003221F3 /* PreviewsSupport.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */; };
+		8B2B493D2FD01F1B003221F3 /* PreviewsSupport.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B493E2FD01F1B003221F3 /* SnapshotPreviewsCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */; };
+		8B2B493F2FD01F1B003221F3 /* SnapshotPreviewsCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B49402FD01F1B003221F3 /* SnapshotSharedModels.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; };
+		8B2B49412FD01F1B003221F3 /* SnapshotSharedModels.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B49422FD01F30003221F3 /* PreviewsSupport.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */; };
+		8B2B49432FD01F30003221F3 /* PreviewsSupport.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B49442FD01F30003221F3 /* SnapshotPreviewsCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */; };
+		8B2B49452FD01F30003221F3 /* SnapshotPreviewsCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B49462FD01F30003221F3 /* SnapshotSharedModels.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; };
+		8B2B49472FD01F30003221F3 /* SnapshotSharedModels.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B49482FD01F3A003221F3 /* PreviewsSupport.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */; };
+		8B2B49492FD01F3A003221F3 /* PreviewsSupport.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B494A2FD01F3A003221F3 /* SnapshotPreviewsCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */; };
+		8B2B494B2FD01F3A003221F3 /* SnapshotPreviewsCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B494C2FD01F3A003221F3 /* SnapshotSharedModels.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; };
+		8B2B494D2FD01F3A003221F3 /* SnapshotSharedModels.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B494E2FD09E01003221F3 /* PreviewsSupport.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8B2B494F2FD0A000003221F3 /* Snapshotting.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49162FD01D81003221F3 /* Snapshotting.xcframework */; };
+		8B2B49502FD0A000003221F3 /* Snapshotting.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2B49162FD01D81003221F3 /* Snapshotting.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FA0B20F12A7DA20200EC91D3 /* AnyViewPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0B20F02A7DA20200EC91D3 /* AnyViewPreview.swift */; };
 		FA0B20FA2A7DCB0100EC91D3 /* ArrayBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0B20F82A7DCB0100EC91D3 /* ArrayBuilder.swift */; };
 		FA0B20FB2A7DCB0100EC91D3 /* PreviewVariants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0B20F92A7DCB0100EC91D3 /* PreviewVariants.swift */; };
@@ -28,31 +76,22 @@
 		FA1671FB2A53E03800A42DB0 /* MessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1671FA2A53E03800A42DB0 /* MessageRow.swift */; };
 		FA1671FD2A53E11E00A42DB0 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1671FC2A53E11E00A42DB0 /* MessageView.swift */; };
 		FA1671FF2A53E1AF00A42DB0 /* ConversationMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1671FE2A53E1AF00A42DB0 /* ConversationMessageView.swift */; };
-		FA170AD32A8B3BA400D1D53D /* PreviewGallery in Frameworks */ = {isa = PBXBuildFile; productRef = FA170AD22A8B3BA400D1D53D /* PreviewGallery */; };
 		FA1E452E2ADF3C3D002C85DB /* UIViewPreviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1E452D2ADF3C3D002C85DB /* UIViewPreviews.swift */; };
 		FA309EC32C38D71C00C85FF4 /* DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA309EC22C38D71C00C85FF4 /* DemoApp.swift */; };
 		FA309EC52C38D71C00C85FF4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA309EC42C38D71C00C85FF4 /* ContentView.swift */; };
 		FA309EC72C38D71D00C85FF4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA309EC62C38D71D00C85FF4 /* Assets.xcassets */; };
 		FA309ECA2C38D71D00C85FF4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA309EC92C38D71D00C85FF4 /* Preview Assets.xcassets */; };
 		FA309ECD2C38D71D00C85FF4 /* Demo Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = FA309EC02C38D71C00C85FF4 /* Demo Watch App.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		FA309EE22C38D7A900C85FF4 /* Snapshotting in Frameworks */ = {isa = PBXBuildFile; productRef = FA309EE12C38D7A900C85FF4 /* Snapshotting */; };
-		FA309EE32C38D7A900C85FF4 /* Snapshotting in Embed Frameworks */ = {isa = PBXBuildFile; productRef = FA309EE12C38D7A900C85FF4 /* Snapshotting */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		FA309EE62C38D7AC00C85FF4 /* SnapshottingTests in Frameworks */ = {isa = PBXBuildFile; productRef = FA309EE52C38D7AC00C85FF4 /* SnapshottingTests */; };
 		FA309EE72C38EB9B00C85FF4 /* DemoWatchAccessibilityPreviewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA309ED82C38D77C00C85FF4 /* DemoWatchAccessibilityPreviewTest.swift */; };
-		FA309EFE2C3EF68A00C85FF4 /* PreviewGallery in Frameworks */ = {isa = PBXBuildFile; productRef = FA309EFD2C3EF68A00C85FF4 /* PreviewGallery */; };
 		FA40515D2A95B587007A66D4 /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA40515C2A95B587007A66D4 /* EmptyView.swift */; };
 		FA5E82972A96448A008DE3F0 /* StateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5E82962A96448A008DE3F0 /* StateView.swift */; };
-		FA7EFE132B9235D100EF534F /* SnapshotPreferences in Frameworks */ = {isa = PBXBuildFile; productRef = FA7EFE122B9235D100EF534F /* SnapshotPreferences */; };
-		FA8E2F9E2E8D797000B7B9EB /* AccessibilitySnapshotCore in Frameworks */ = {isa = PBXBuildFile; productRef = FA8E2F9D2E8D797000B7B9EB /* AccessibilitySnapshotCore */; };
 		FA8F8B7E2C66C4C4007CEA33 /* DemoAppPreviewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8F8B7D2C66C4C4007CEA33 /* DemoAppPreviewTest.swift */; };
-		FA8F8B852C66C4CA007CEA33 /* SnapshottingTests in Frameworks */ = {isa = PBXBuildFile; productRef = FA8F8B842C66C4CA007CEA33 /* SnapshottingTests */; };
 		FA9C8E442A56959300DC4574 /* RatingPreviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9C8E432A56959300DC4574 /* RatingPreviews.swift */; };
 		FAA4F4CF2B271D9C00127B63 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA4F4CE2B271D9C00127B63 /* Color.swift */; };
 		FABCCD932AC39081008F4D3A /* EMGTestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABCCD922AC39081008F4D3A /* EMGTestHandler.swift */; };
 		FAC912372C894B6E00459191 /* OSVersionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC912362C894B6E00459191 /* OSVersionView.swift */; };
 		FACA23792A55FBEE0080545A /* DemoModule.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA1671D72A5399F700A42DB0 /* DemoModule.framework */; };
 		FACBADA32C67B8D60012D600 /* DemoWatchPreviewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACBADA22C67B8D60012D600 /* DemoWatchPreviewTest.swift */; };
-		FACBADAA2C67B8ED0012D600 /* SnapshottingTests in Frameworks */ = {isa = PBXBuildFile; productRef = FACBADA92C67B8ED0012D600 /* SnapshottingTests */; };
 		FACBADAC2C67B9A50012D600 /* DemoWatchSnapshotTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACBADAB2C67B9A50012D600 /* DemoWatchSnapshotTest.swift */; };
 		FAD0107B2AA29ABA007D1AF6 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD0107A2AA29ABA007D1AF6 /* TextView.swift */; };
 		FAD52BF62A7B5EEA001F1832 /* ExpandingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD52BF12A7B5EEA001F1832 /* ExpandingView.swift */; };
@@ -102,13 +141,61 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		8B2B491E2FD01D94003221F3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8B2B49372FD01EDD003221F3 /* SnapshotPreferences.xcframework in Embed Frameworks */,
+				8B2B49352FD01EDD003221F3 /* PreviewsSupport.xcframework in Embed Frameworks */,
+				8B2B49392FD01EDD003221F3 /* SnapshotPreviewsCore.xcframework in Embed Frameworks */,
+				8B2B491D2FD01D94003221F3 /* PreviewGallery.xcframework in Embed Frameworks */,
+				8B2B493B2FD01EDD003221F3 /* SnapshotSharedModels.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8B2B49212FD01D9F003221F3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8B2B49472FD01F30003221F3 /* SnapshotSharedModels.xcframework in Embed Frameworks */,
+				8B2B49452FD01F30003221F3 /* SnapshotPreviewsCore.xcframework in Embed Frameworks */,
+				8B2B49432FD01F30003221F3 /* PreviewsSupport.xcframework in Embed Frameworks */,
+				8B2B49202FD01D9F003221F3 /* SnapshottingTests.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8B2B49242FD01DAA003221F3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8B2B494D2FD01F3A003221F3 /* SnapshotSharedModels.xcframework in Embed Frameworks */,
+				8B2B494B2FD01F3A003221F3 /* SnapshotPreviewsCore.xcframework in Embed Frameworks */,
+				8B2B49492FD01F3A003221F3 /* PreviewsSupport.xcframework in Embed Frameworks */,
+				8B2B49232FD01DAA003221F3 /* SnapshottingTests.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FA1671E22A5399F700A42DB0 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				8B2B492B2FD01DC1003221F3 /* SnapshotPreferences.xcframework in Embed Frameworks */,
 				FA1671DE2A5399F700A42DB0 /* DemoModule.framework in Embed Frameworks */,
+				8B2B494E2FD09E01003221F3 /* PreviewsSupport.xcframework in Embed Frameworks */,
+				8B2B492D2FD01E1C003221F3 /* SnapshotPreviewsCore.xcframework in Embed Frameworks */,
+				8B2B49292FD01DBD003221F3 /* PreviewGallery.xcframework in Embed Frameworks */,
+				8B2B492F2FD01E23003221F3 /* SnapshotSharedModels.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,7 +217,11 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				FA309EE32C38D7A900C85FF4 /* Snapshotting in Embed Frameworks */,
+				8B2B49502FD0A000003221F3 /* Snapshotting.xcframework in Embed Frameworks */,
+				8B2B491B2FD01D8B003221F3 /* SnapshottingTests.xcframework in Embed Frameworks */,
+				8B2B493D2FD01F1B003221F3 /* PreviewsSupport.xcframework in Embed Frameworks */,
+				8B2B493F2FD01F1B003221F3 /* SnapshotPreviewsCore.xcframework in Embed Frameworks */,
+				8B2B49412FD01F1B003221F3 /* SnapshotSharedModels.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -138,6 +229,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8B2B49122FD01D81003221F3 /* PreviewGallery.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PreviewGallery.xcframework; path = ../../XCFrameworks/PreviewGallery.xcframework; sourceTree = "<group>"; };
+		8B2B49132FD01D81003221F3 /* SnapshotPreferences.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SnapshotPreferences.xcframework; path = ../../XCFrameworks/SnapshotPreferences.xcframework; sourceTree = "<group>"; };
+		8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SnapshotPreviewsCore.xcframework; path = ../../XCFrameworks/SnapshotPreviewsCore.xcframework; sourceTree = "<group>"; };
+		8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SnapshotSharedModels.xcframework; path = ../../XCFrameworks/SnapshotSharedModels.xcframework; sourceTree = "<group>"; };
+		8B2B49162FD01D81003221F3 /* Snapshotting.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Snapshotting.xcframework; path = ../../XCFrameworks/Snapshotting.xcframework; sourceTree = "<group>"; };
+		8B2B49172FD01D81003221F3 /* SnapshottingTests.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SnapshottingTests.xcframework; path = ../../XCFrameworks/SnapshottingTests.xcframework; sourceTree = "<group>"; };
+		8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PreviewsSupport.xcframework; path = ../../XCFrameworks/PreviewsSupport.xcframework; sourceTree = "<group>"; };
 		C39F81522C6ABB7A004C7D57 /* DemoAppTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = DemoAppTests.xctestplan; sourceTree = "<group>"; };
 		FA0B20F02A7DA20200EC91D3 /* AnyViewPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyViewPreview.swift; sourceTree = "<group>"; };
 		FA0B20F82A7DCB0100EC91D3 /* ArrayBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrayBuilder.swift; sourceTree = "<group>"; };
@@ -190,7 +288,6 @@
 		FAD52BF42A7B5EEA001F1832 /* RideShareButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RideShareButton.swift; sourceTree = "<group>"; };
 		FAD52BF52A7B5EEA001F1832 /* RideOptionsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RideOptionsView.swift; sourceTree = "<group>"; };
 		FADB112B2C67A17500985C48 /* DemoAppSnapshotTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoAppSnapshotTest.swift; sourceTree = "<group>"; };
-		FAF1BA622A54934200AEBE1B /* .. */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ..; path = ../../..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -198,8 +295,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA170AD32A8B3BA400D1D53D /* PreviewGallery in Frameworks */,
+				8B2B492A2FD01DC1003221F3 /* SnapshotPreferences.xcframework in Frameworks */,
+				8B2B49282FD01DBD003221F3 /* PreviewGallery.xcframework in Frameworks */,
+				8B2B492C2FD01E1C003221F3 /* SnapshotPreviewsCore.xcframework in Frameworks */,
 				FACA23792A55FBEE0080545A /* DemoModule.framework in Frameworks */,
+				8B2B49312FD01E8B003221F3 /* PreviewsSupport.xcframework in Frameworks */,
+				8B2B492E2FD01E23003221F3 /* SnapshotSharedModels.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,7 +308,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA7EFE132B9235D100EF534F /* SnapshotPreferences in Frameworks */,
+				8B2B49322FD01EC1003221F3 /* SnapshotSharedModels.xcframework in Frameworks */,
+				8B2B49252FD01DB3003221F3 /* SnapshotPreferences.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,7 +317,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA309EFE2C3EF68A00C85FF4 /* PreviewGallery in Frameworks */,
+				8B2B49362FD01EDD003221F3 /* SnapshotPreferences.xcframework in Frameworks */,
+				8B2B49342FD01EDD003221F3 /* PreviewsSupport.xcframework in Frameworks */,
+				8B2B49382FD01EDD003221F3 /* SnapshotPreviewsCore.xcframework in Frameworks */,
+				8B2B491C2FD01D94003221F3 /* PreviewGallery.xcframework in Frameworks */,
+				8B2B493A2FD01EDD003221F3 /* SnapshotSharedModels.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,8 +329,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA309EE62C38D7AC00C85FF4 /* SnapshottingTests in Frameworks */,
-				FA309EE22C38D7A900C85FF4 /* Snapshotting in Frameworks */,
+				8B2B494F2FD0A000003221F3 /* Snapshotting.xcframework in Frameworks */,
+				8B2B491A2FD01D8B003221F3 /* SnapshottingTests.xcframework in Frameworks */,
+				8B2B493C2FD01F1B003221F3 /* PreviewsSupport.xcframework in Frameworks */,
+				8B2B493E2FD01F1B003221F3 /* SnapshotPreviewsCore.xcframework in Frameworks */,
+				8B2B49402FD01F1B003221F3 /* SnapshotSharedModels.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,8 +341,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA8E2F9E2E8D797000B7B9EB /* AccessibilitySnapshotCore in Frameworks */,
-				FA8F8B852C66C4CA007CEA33 /* SnapshottingTests in Frameworks */,
+				8B2B49462FD01F30003221F3 /* SnapshotSharedModels.xcframework in Frameworks */,
+				8B2B49442FD01F30003221F3 /* SnapshotPreviewsCore.xcframework in Frameworks */,
+				8B2B49422FD01F30003221F3 /* PreviewsSupport.xcframework in Frameworks */,
+				8B2B491F2FD01D9F003221F3 /* SnapshottingTests.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,7 +352,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FACBADAA2C67B8ED0012D600 /* SnapshottingTests in Frameworks */,
+				8B2B494C2FD01F3A003221F3 /* SnapshotSharedModels.xcframework in Frameworks */,
+				8B2B494A2FD01F3A003221F3 /* SnapshotPreviewsCore.xcframework in Frameworks */,
+				8B2B49482FD01F3A003221F3 /* PreviewsSupport.xcframework in Frameworks */,
+				8B2B49222FD01DAA003221F3 /* SnapshottingTests.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,12 +367,12 @@
 			children = (
 				C39F81522C6ABB7A004C7D57 /* DemoAppTests.xctestplan */,
 				FA44246E2AAA5B27005BFCD9 /* DemoApp.xctestplan */,
-				FA1671C12A5367A800A42DB0 /* DemoApp */,
-				FA1671D82A5399F700A42DB0 /* DemoModule */,
-				FA309EC12C38D71C00C85FF4 /* Demo Watch App */,
-				FA309ED72C38D77C00C85FF4 /* DemoWatchTests */,
-				FA8F8B7C2C66C4C4007CEA33 /* DemoAppTests */,
-				FACBADA12C67B8D60012D600 /* Demo Watch AppTests */,
+				FA1671C12A5367A800A42DB0 /* ../DemoApp/DemoApp */,
+				FA1671D82A5399F700A42DB0 /* ../DemoApp/DemoModule */,
+				FA309EC12C38D71C00C85FF4 /* ../DemoApp/Demo Watch App */,
+				FA309ED72C38D77C00C85FF4 /* ../DemoApp/DemoWatchTests */,
+				FA8F8B7C2C66C4C4007CEA33 /* ../DemoApp/DemoAppTests */,
+				FACBADA12C67B8D60012D600 /* ../DemoApp/Demo Watch AppTests */,
 				FA1671C02A5367A800A42DB0 /* Products */,
 				FA6E72BD2A54944800448463 /* Frameworks */,
 			);
@@ -277,10 +391,9 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FA1671C12A5367A800A42DB0 /* DemoApp */ = {
+		FA1671C12A5367A800A42DB0 /* ../DemoApp/DemoApp */ = {
 			isa = PBXGroup;
 			children = (
-				FAF1BA622A54934200AEBE1B /* .. */,
 				FA1671C22A5367A800A42DB0 /* DemoAppApp.swift */,
 				FABCCD922AC39081008F4D3A /* EMGTestHandler.swift */,
 				FA1671C42A5367A800A42DB0 /* ContentView.swift */,
@@ -289,7 +402,7 @@
 				FA1671C82A5367A800A42DB0 /* DemoApp.entitlements */,
 				FA1671C92A5367A800A42DB0 /* Preview Content */,
 			);
-			path = DemoApp;
+			path = ../DemoApp/DemoApp;
 			sourceTree = "<group>";
 		};
 		FA1671C92A5367A800A42DB0 /* Preview Content */ = {
@@ -300,7 +413,7 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		FA1671D82A5399F700A42DB0 /* DemoModule */ = {
+		FA1671D82A5399F700A42DB0 /* ../DemoApp/DemoModule */ = {
 			isa = PBXGroup;
 			children = (
 				FA1671D92A5399F700A42DB0 /* DemoModule.h */,
@@ -319,10 +432,10 @@
 				FA1671FE2A53E1AF00A42DB0 /* ConversationMessageView.swift */,
 				FA13B8EE2B3E8B3300F58836 /* DateView.swift */,
 			);
-			path = DemoModule;
+			path = ../DemoApp/DemoModule;
 			sourceTree = "<group>";
 		};
-		FA309EC12C38D71C00C85FF4 /* Demo Watch App */ = {
+		FA309EC12C38D71C00C85FF4 /* ../DemoApp/Demo Watch App */ = {
 			isa = PBXGroup;
 			children = (
 				FA309EC22C38D71C00C85FF4 /* DemoApp.swift */,
@@ -330,7 +443,7 @@
 				FA309EC62C38D71D00C85FF4 /* Assets.xcassets */,
 				FA309EC82C38D71D00C85FF4 /* Preview Content */,
 			);
-			path = "Demo Watch App";
+			path = "../DemoApp/Demo Watch App";
 			sourceTree = "<group>";
 		};
 		FA309EC82C38D71D00C85FF4 /* Preview Content */ = {
@@ -341,38 +454,45 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		FA309ED72C38D77C00C85FF4 /* DemoWatchTests */ = {
+		FA309ED72C38D77C00C85FF4 /* ../DemoApp/DemoWatchTests */ = {
 			isa = PBXGroup;
 			children = (
 				FA309ED82C38D77C00C85FF4 /* DemoWatchAccessibilityPreviewTest.swift */,
 			);
-			path = DemoWatchTests;
+			path = ../DemoApp/DemoWatchTests;
 			sourceTree = "<group>";
 		};
 		FA6E72BD2A54944800448463 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8B2B49122FD01D81003221F3 /* PreviewGallery.xcframework */,
+				8B2B49132FD01D81003221F3 /* SnapshotPreferences.xcframework */,
+				8B2B49142FD01D81003221F3 /* SnapshotPreviewsCore.xcframework */,
+				8B2B49152FD01D81003221F3 /* SnapshotSharedModels.xcframework */,
+				8B2B49162FD01D81003221F3 /* Snapshotting.xcframework */,
+				8B2B49172FD01D81003221F3 /* SnapshottingTests.xcframework */,
+				8B2B49302FD01E8B003221F3 /* PreviewsSupport.xcframework */,
 				FACA23752A55FB970080545A /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		FA8F8B7C2C66C4C4007CEA33 /* DemoAppTests */ = {
+		FA8F8B7C2C66C4C4007CEA33 /* ../DemoApp/DemoAppTests */ = {
 			isa = PBXGroup;
 			children = (
 				FA8F8B7D2C66C4C4007CEA33 /* DemoAppPreviewTest.swift */,
 				FADB112B2C67A17500985C48 /* DemoAppSnapshotTest.swift */,
 			);
-			path = DemoAppTests;
+			path = ../DemoApp/DemoAppTests;
 			sourceTree = "<group>";
 		};
-		FACBADA12C67B8D60012D600 /* Demo Watch AppTests */ = {
+		FACBADA12C67B8D60012D600 /* ../DemoApp/Demo Watch AppTests */ = {
 			isa = PBXGroup;
 			children = (
 				FACBADA22C67B8D60012D600 /* DemoWatchPreviewTest.swift */,
 				FACBADAB2C67B9A50012D600 /* DemoWatchSnapshotTest.swift */,
 			);
-			path = "Demo Watch AppTests";
+			path = "../DemoApp/Demo Watch AppTests";
 			sourceTree = "<group>";
 		};
 		FAD52BF02A7B5EBB001F1832 /* TestViews */ = {
@@ -427,7 +547,6 @@
 			);
 			name = DemoApp;
 			packageProductDependencies = (
-				FA170AD22A8B3BA400D1D53D /* PreviewGallery */,
 			);
 			productName = DemoApp;
 			productReference = FA1671BF2A5367A800A42DB0 /* DemoApp.app */;
@@ -448,7 +567,6 @@
 			);
 			name = DemoModule;
 			packageProductDependencies = (
-				FA7EFE122B9235D100EF534F /* SnapshotPreferences */,
 			);
 			productName = DemoModule;
 			productReference = FA1671D72A5399F700A42DB0 /* DemoModule.framework */;
@@ -461,6 +579,7 @@
 				FA309EBC2C38D71C00C85FF4 /* Sources */,
 				FA309EBD2C38D71C00C85FF4 /* Frameworks */,
 				FA309EBE2C38D71C00C85FF4 /* Resources */,
+				8B2B491E2FD01D94003221F3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -468,7 +587,6 @@
 			);
 			name = "Demo Watch App";
 			packageProductDependencies = (
-				FA309EFD2C3EF68A00C85FF4 /* PreviewGallery */,
 			);
 			productName = "Demo Watch App";
 			productReference = FA309EC02C38D71C00C85FF4 /* Demo Watch App.app */;
@@ -490,8 +608,6 @@
 			);
 			name = DemoWatchTests;
 			packageProductDependencies = (
-				FA309EE12C38D7A900C85FF4 /* Snapshotting */,
-				FA309EE52C38D7AC00C85FF4 /* SnapshottingTests */,
 			);
 			productName = Demo;
 			productReference = FA309ED62C38D77C00C85FF4 /* DemoWatchTests.xctest */;
@@ -504,6 +620,7 @@
 				FA8F8B772C66C4C4007CEA33 /* Sources */,
 				FA8F8B782C66C4C4007CEA33 /* Frameworks */,
 				FA8F8B792C66C4C4007CEA33 /* Resources */,
+				8B2B49212FD01D9F003221F3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -512,8 +629,6 @@
 			);
 			name = DemoAppTests;
 			packageProductDependencies = (
-				FA8F8B842C66C4CA007CEA33 /* SnapshottingTests */,
-				FA8E2F9D2E8D797000B7B9EB /* AccessibilitySnapshotCore */,
 			);
 			productName = DemoAppTests;
 			productReference = FA8F8B7B2C66C4C4007CEA33 /* DemoAppTests.xctest */;
@@ -526,6 +641,7 @@
 				FACBAD9C2C67B8D60012D600 /* Sources */,
 				FACBAD9D2C67B8D60012D600 /* Frameworks */,
 				FACBAD9E2C67B8D60012D600 /* Resources */,
+				8B2B49242FD01DAA003221F3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -534,7 +650,6 @@
 			);
 			name = "Demo Watch AppTests";
 			packageProductDependencies = (
-				FACBADA92C67B8ED0012D600 /* SnapshottingTests */,
 			);
 			productName = "Demo Watch AppTests";
 			productReference = FACBADA02C67B8D60012D600 /* Demo Watch AppTests.xctest */;
@@ -574,7 +689,7 @@
 					};
 				};
 			};
-			buildConfigurationList = FA1671BA2A5367A800A42DB0 /* Build configuration list for PBXProject "DemoApp" */;
+			buildConfigurationList = FA1671BA2A5367A800A42DB0 /* Build configuration list for PBXProject "DemoApp-XCFrameworks" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -584,7 +699,6 @@
 			);
 			mainGroup = FA1671B62A5367A800A42DB0;
 			packageReferences = (
-				FA8E2F9C2E8D797000B7B9EB /* XCRemoteSwiftPackageReference "AccessibilitySnapshot" */,
 			);
 			productRefGroup = FA1671C02A5367A800A42DB0 /* Products */;
 			projectDirPath = "";
@@ -886,11 +1000,11 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = DemoApp/DemoApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ../DemoApp/DemoApp/DemoApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"DemoApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 62J2XHNK9T;
+				DEVELOPMENT_ASSET_PATHS = "\"../DemoApp/DemoApp/Preview Content\"";
+				DEVELOPMENT_TEAM = BR6WD3M6ZD;
 				ENABLE_DEBUG_DYLIB = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
@@ -914,12 +1028,12 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				RUN_DOCUMENTATION_COMPILER = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SUPPORTS_MACCATALYST = YES;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -929,11 +1043,11 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = DemoApp/DemoApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ../DemoApp/DemoApp/DemoApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"DemoApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 62J2XHNK9T;
+				DEVELOPMENT_ASSET_PATHS = "\"../DemoApp/DemoApp/Preview Content\"";
+				DEVELOPMENT_TEAM = BR6WD3M6ZD;
 				ENABLE_DEBUG_DYLIB = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
@@ -957,12 +1071,12 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				RUN_DOCUMENTATION_COMPILER = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SUPPORTS_MACCATALYST = YES;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -973,7 +1087,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = J9H72XH8P9;
+				DEVELOPMENT_TEAM = BR6WD3M6ZD;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -998,13 +1112,12 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = auto;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1017,7 +1130,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = J9H72XH8P9;
+				DEVELOPMENT_TEAM = BR6WD3M6ZD;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1042,12 +1155,11 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = auto;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1060,13 +1172,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Demo Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = 62J2XHNK9T;
+				DEVELOPMENT_ASSET_PATHS = "\"../DemoApp/Demo Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = BR6WD3M6ZD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Demo;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIDeviceFamily = 4;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKApplication = YES;
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.emerge.PreviewsDemoApp;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1093,13 +1205,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Demo Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = 62J2XHNK9T;
+				DEVELOPMENT_ASSET_PATHS = "\"../DemoApp/Demo Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = BR6WD3M6ZD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Demo;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIDeviceFamily = 4;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKApplication = YES;
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.emerge.PreviewsDemoApp;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1173,7 +1285,9 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1195,7 +1309,9 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1248,7 +1364,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		FA1671BA2A5367A800A42DB0 /* Build configuration list for PBXProject "DemoApp" */ = {
+		FA1671BA2A5367A800A42DB0 /* Build configuration list for PBXProject "DemoApp-XCFrameworks" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FA1671CC2A5367A800A42DB0 /* Debug */,
@@ -1312,53 +1428,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		FA8E2F9C2E8D797000B7B9EB /* XCRemoteSwiftPackageReference "AccessibilitySnapshot" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/EmergeTools/AccessibilitySnapshot.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.0.2;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		FA170AD22A8B3BA400D1D53D /* PreviewGallery */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = PreviewGallery;
-		};
-		FA309EE12C38D7A900C85FF4 /* Snapshotting */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Snapshotting;
-		};
-		FA309EE52C38D7AC00C85FF4 /* SnapshottingTests */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SnapshottingTests;
-		};
-		FA309EFD2C3EF68A00C85FF4 /* PreviewGallery */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = PreviewGallery;
-		};
-		FA7EFE122B9235D100EF534F /* SnapshotPreferences */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SnapshotPreferences;
-		};
-		FA8E2F9D2E8D797000B7B9EB /* AccessibilitySnapshotCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = FA8E2F9C2E8D797000B7B9EB /* XCRemoteSwiftPackageReference "AccessibilitySnapshot" */;
-			productName = AccessibilitySnapshotCore;
-		};
-		FA8F8B842C66C4CA007CEA33 /* SnapshottingTests */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SnapshottingTests;
-		};
-		FACBADA92C67B8ED0012D600 /* SnapshottingTests */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SnapshottingTests;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FA1671B72A5367A800A42DB0 /* Project object */;
 }

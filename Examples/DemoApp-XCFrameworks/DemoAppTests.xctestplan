@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "id": "B1D580A7-404D-4E1D-80D8-0E56CDD58281",
+      "name": "Test Scheme Action",
+      "options": {}
+    }
+  ],
+  "defaultOptions": {},
+  "testTargets": [
+    {
+      "target": {
+        "containerPath": "container:DemoApp-XCFrameworks.xcodeproj",
+        "identifier": "FA8F8B7A2C66C4C4007CEA33",
+        "name": "DemoAppTests"
+      }
+    }
+  ],
+  "version": 1
+}
