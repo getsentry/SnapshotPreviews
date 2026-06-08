@@ -282,6 +282,11 @@ jobs:
     needs: [generate_snapshots, generate_image_names]
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
       - name: Download generated snapshots
         uses: actions/download-artifact@v5
         with:
