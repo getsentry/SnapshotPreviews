@@ -339,9 +339,10 @@ jobs:
       - name: Install sentry-cli
         run: curl -sL https://sentry.io/get-cli/ | bash
 
-      # Upload the rendered snapshot files. The --all-image-file-names-file
-      # flag points Sentry at the full manifest, which lets Sentry distinguish
-      # snapshots skipped by selective testing from snapshots that were removed.
+      # Upload the rendered snapshot files. On pull requests,
+      # --all-image-file-names-file points Sentry at the full manifest so it can
+      # distinguish snapshots skipped by selective testing from removed snapshots.
+      # Pushes to main upload the full base snapshot set without this flag.
       - name: Upload snapshots to Sentry
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -351,8 +352,17 @@ jobs:
             exit 1
           fi
 
-          sentry-cli build snapshots "${SNAPSHOT_UPLOAD_BASE_DIR}" \
-            --auth-token "${SENTRY_AUTH_TOKEN}" \
-            --project "${SENTRY_PROJECT}" \
-            --app-id "${SENTRY_APP_ID}" \
-            --all-image-file-names-file "${ALL_IMAGE_NAMES_FILE}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            sentry-cli snapshots upload \
+              --auth-token "${SENTRY_AUTH_TOKEN}" \
+              --project "${SENTRY_PROJECT}" \
+              --app-id "${SENTRY_APP_ID}" \
+              --all-image-file-names-file "${ALL_IMAGE_NAMES_FILE}" \
+              "${SNAPSHOT_UPLOAD_BASE_DIR}"
+          else
+            sentry-cli snapshots upload \
+              --auth-token "${SENTRY_AUTH_TOKEN}" \
+              --project "${SENTRY_PROJECT}" \
+              --app-id "${SENTRY_APP_ID}" \
+              "${SNAPSHOT_UPLOAD_BASE_DIR}"
+          fi
