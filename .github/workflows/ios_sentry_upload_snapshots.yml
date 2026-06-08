@@ -60,7 +60,7 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"
             HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-            changed_files="$(git diff --name-only "${BASE_SHA}" "${HEAD_SHA}")"
+            changed_files="$(git diff --name-only "${BASE_SHA}...${HEAD_SHA}")"
           else
             changed_files=""
           fi
@@ -91,7 +91,7 @@ jobs:
           fi
 
           selected_tests="$(IFS=,; echo "${tests[*]}")"
-          selected_tests_json="$(printf '%s\n' "${tests[@]}" | jq -R . | jq -cs .)"
+          selected_tests_json="$(printf '%s\n' "${tests[@]}" | jq -R . | jq -cs 'map({name: ., slug: (split("/")[-1] | gsub("[^A-Za-z0-9_-]"; "-"))})')"
 
           echo "selected_tests=${selected_tests}" >> "${GITHUB_OUTPUT}"
           echo "selected_tests_json=${selected_tests_json}" >> "${GITHUB_OUTPUT}"
@@ -162,13 +162,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - simulator_name: iPhone 17 Pro Max
+        snapshot_test: ${{ fromJSON(needs.select_snapshot_tests.outputs.selected_tests_json) }}
+        simulator:
+          - name: iPhone 17 Pro Max
             slug: iphone-17-pro-max
 
     env:
-      TEST_RUNNER_SNAPSHOTS_EXPORT_DIR: ${{ github.workspace }}/snapshot-images/${{ matrix.slug }}
-      SELECTED_SNAPSHOT_TESTS: ${{ needs.select_snapshot_tests.outputs.selected_tests }}
+      TEST_RUNNER_SNAPSHOTS_EXPORT_DIR: ${{ github.workspace }}/snapshot-images/${{ matrix.simulator.slug }}/${{ matrix.snapshot_test.slug }}
 
     steps:
       - name: Checkout
@@ -191,30 +191,23 @@ jobs:
           tar -C "${DERIVED_DATA_PATH}/Build" -xzf "${BUILD_PRODUCTS_ARCHIVE}"
 
       - name: Boot simulator
-        run: xcrun simctl boot "${{ matrix.simulator_name }}" || true
+        run: xcrun simctl boot "${{ matrix.simulator.name }}" || true
 
       - name: Prepare snapshot export directory
         run: mkdir -p "${TEST_RUNNER_SNAPSHOTS_EXPORT_DIR}"
 
       - name: Generate snapshot images
         run: |
-          set -euo pipefail
-          only_testing_args=()
-          IFS=',' read -ra tests <<< "${SELECTED_SNAPSHOT_TESTS}"
-          for test in "${tests[@]}"; do
-            only_testing_args+=("-only-testing:${test}")
-          done
-
           xcodebuild test-without-building \
             -xctestrun "${DERIVED_DATA_PATH}/Build/Products/${XCTESTRUN_FILENAME}" \
-            -destination "platform=iOS Simulator,name=${{ matrix.simulator_name }},arch=arm64" \
-            "${only_testing_args[@]}" \
-            -resultBundlePath "SnapshotResults-${{ matrix.slug }}.xcresult"
+            -destination "platform=iOS Simulator,name=${{ matrix.simulator.name }},arch=arm64" \
+            -only-testing:"${{ matrix.snapshot_test.name }}" \
+            -resultBundlePath "SnapshotResults-${{ matrix.simulator.slug }}-${{ matrix.snapshot_test.slug }}.xcresult"
 
       - name: Upload snapshots artifact
         uses: actions/upload-artifact@v7
         with:
-          name: snapshots-${{ matrix.slug }}
+          name: snapshots-${{ matrix.simulator.slug }}-${{ matrix.snapshot_test.slug }}
           path: ${{ env.TEST_RUNNER_SNAPSHOTS_EXPORT_DIR }}
           if-no-files-found: error
 
