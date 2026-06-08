@@ -96,16 +96,6 @@ copy_swift_module() {
     configuration="Release"
   fi
 
-  local source_module_path="$DERIVED_DATA_DIR/$framework/Build/Intermediates.noindex/ArchiveIntermediates/$framework/BuildProductsPath/$configuration/$framework.swiftmodule"
-  if [ ! -d "$source_module_path" ]; then
-    if requires_swift_module "$framework"; then
-      echo "Missing Swift module output for $framework at $source_module_path" >&2
-      exit 1
-    fi
-
-    return
-  fi
-
   local framework_path="$archive_path/Products/Library/Frameworks/$framework.framework"
   local modules_path="$framework_path/Modules"
 
@@ -115,6 +105,19 @@ copy_swift_module() {
       rm -r "$framework_path/Modules"
     fi
     ln -s "Versions/Current/Modules" "$framework_path/Modules"
+  fi
+
+  local source_module_path="$DERIVED_DATA_DIR/$framework/Build/Intermediates.noindex/ArchiveIntermediates/$framework/BuildProductsPath/$configuration/$framework.swiftmodule"
+  if [ ! -d "$source_module_path" ]; then
+    if requires_swift_module "$framework"; then
+      echo "Missing Swift module output for $framework at $source_module_path" >&2
+      exit 1
+    fi
+
+    if [ -d "$modules_path" ]; then
+      sanitize_swift_interfaces "$modules_path" "$framework"
+    fi
+    return
   fi
 
   mkdir -p "$modules_path"
