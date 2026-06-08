@@ -298,7 +298,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$(dirname "${ALL_IMAGE_NAMES_FILE}")"
-          mapfile -t image_name_files < <(find "${{ github.workspace }}/snapshot-image-names" -type f -name '*.txt' | sort)
+          image_name_files=()
+          while IFS= read -r file; do
+            image_name_files+=("${file}")
+          done < <(find "${{ github.workspace }}/snapshot-image-names" -type f -name '*.txt' | sort)
+
           if [ "${#image_name_files[@]}" -eq 0 ]; then
             echo "No image name files found" >&2
             exit 1
