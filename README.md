@@ -94,9 +94,13 @@ These modes are mutually exclusive. If `TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FI
 For every rendered preview, two files are written:
 
 - **`<name>.png`** — the rendered preview image.
-- **`<name>.json`** — metadata sidecar used by Sentry Snapshots.
+- **`<name>.json`** — metadata sidecar used by Sentry Snapshots. See [JSON sidecar schema](#json-sidecar-schema) for field details.
 
-The sidecar includes:
+No Xcode code-coverage data (`.profraw` / `.profdata`) is written by the exporter — only the PNGs and sidecars. If you need code coverage from the same test run, enable it on the scheme as usual; coverage output goes to the `.xcresult` bundle independently.
+
+### JSON sidecar schema
+
+Each `.json` sidecar contains the following fields:
 
 | Field | Description |
 | --- | --- |
@@ -122,8 +126,6 @@ import SnapshotPreferences
     .snapshotDiffThreshold(0.05)
 }
 ```
-
-No Xcode code-coverage data (`.profraw` / `.profdata`) is written by the exporter — only the PNGs and sidecars. If you need code coverage from the same test run, enable it on the scheme as usual; coverage output goes to the `.xcresult` bundle independently.
 
 ### 2. Upload to Sentry
 
