@@ -77,53 +77,14 @@ xcodebuild test \
   -destination 'platform=iOS Simulator,name=iPhone 15 Pro'
 ```
 
-### Environment variables
-
-SnapshotPreviews supports these test-runner environment variables:
-
-| Variable | Description |
-| --- | --- |
-| `TEST_RUNNER_SNAPSHOTS_EXPORT_DIR` | Writes rendered snapshot PNGs and JSON sidecars to the given directory instead of attaching PNGs to the `.xcresult` bundle. |
-| `TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FILE` | Writes all discovered logical `.png` image names to the given file, then returns without rendering previews. Used to support selective testing workflows. |
-
-These modes are mutually exclusive. If `TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FILE` is set, SnapshotPreviews writes image names only and does not render or export snapshot images.
-
-> [!NOTE]
-> The `TEST_RUNNER_` prefix is how Xcode forwards an environment variable from `xcodebuild` into the test runner process. Inside the runner, SnapshotPreviews reads the variable without that prefix.
-
 For every rendered preview, two files are written:
 
 - **`<name>.png`** — the rendered preview image.
-- **`<name>.json`** — metadata sidecar used by Sentry Snapshots.
-
-The sidecar includes:
-
-| Field | Description |
-| --- | --- |
-| `display_name` | Snapshot name shown in Sentry. Generated from the preview name, file path, and module so exported filenames stay stable and unambiguous. |
-| `group` | Grouping key Sentry uses to organize related snapshots. Generated from the preview name, file path, and module. |
-| `diff_threshold` | Allowed visual difference for this snapshot. See details below. |
-| `tags` | Optional key-value pairs used to filter and group snapshots in Sentry. |
-| `context` | Supporting metadata such as test name, simulator info, orientation, color scheme, source line, preview attributes, and any custom context you add. These fields are surfaced on the snapshot detail page in Sentry's UI. |
-
-SnapshotPreviews adds these `context` keys by default when values are available: `test_name`, `accessibility_enabled`, `simulator.device_name`, `simulator.model_identifier`, `preview.index`, `preview.display_name`, `preview.container_type_name`, `preview.container_display_name`, `preview.preferred_color_scheme`, `preview.orientation`, and `preview.line`.
-
-Use `.snapshotAdditionalContext(...)` to add custom fields to `context`. Custom context is shallow-merged into the generated context, so a custom key such as `"test_name"` replaces the generated value. Supported custom values are strings, numbers, booleans, and nested objects.
-
-Use the `.snapshotDiffThreshold(...)` view modifier from the `SnapshotPreferences` product to customize the allowed visual difference for a specific preview. For example, `.snapshotDiffThreshold(0.05)` allows up to a 5% difference for that snapshot.
-
-```swift
-import SnapshotPreferences
-
-#Preview("Map") {
-  MapPreview()
-    .snapshotTags(["screen": "map"])
-    .snapshotAdditionalContext(["fixture": "city-route"])
-    .snapshotDiffThreshold(0.05)
-}
-```
+- **`<name>.json`** — metadata sidecar used by Sentry Snapshots. See [JSON sidecar schema](#json-sidecar-schema) for field details.
 
 No Xcode code-coverage data (`.profraw` / `.profdata`) is written by the exporter — only the PNGs and sidecars. If you need code coverage from the same test run, enable it on the scheme as usual; coverage output goes to the `.xcresult` bundle independently.
+
+See [Environment variables](#environment-variables) for all supported test-runner variables.
 
 ### 2. Upload to Sentry
 
@@ -166,6 +127,49 @@ A complete GitHub Actions step:
 Use Sentry's Fastlane integration if your CI already uploads Apple artifacts through Fastlane. See Sentry's [iOS Snapshots setup docs](https://docs.sentry.io/platforms/apple/guides/ios/snapshots/#step-3-integrate-into-ci) for the Fastlane configuration.
 
 See Sentry's [CI integration docs](https://docs.sentry.io/product/snapshots/integrating-into-ci/) for sharding across simulators and base/head SHA pinning.
+
+### Environment variables
+
+SnapshotPreviews supports these test-runner environment variables:
+
+| Variable | Description |
+| --- | --- |
+| `TEST_RUNNER_SNAPSHOTS_EXPORT_DIR` | Writes rendered snapshot PNGs and JSON sidecars to the given directory instead of attaching PNGs to the `.xcresult` bundle. |
+| `TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FILE` | Writes all discovered logical `.png` image names to the given file, then returns without rendering previews. Used to support selective testing workflows. |
+
+These modes are mutually exclusive. If `TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FILE` is set, SnapshotPreviews writes image names only and does not render or export snapshot images.
+
+> [!NOTE]
+> The `TEST_RUNNER_` prefix is how Xcode forwards an environment variable from `xcodebuild` into the test runner process. Inside the runner, SnapshotPreviews reads the variable without that prefix.
+
+### JSON sidecar schema
+
+Each `.json` sidecar contains the following fields:
+
+| Field | Description |
+| --- | --- |
+| `display_name` | Snapshot name shown in Sentry. Generated from the preview name, file path, and module so exported filenames stay stable and unambiguous. |
+| `group` | Grouping key Sentry uses to organize related snapshots. Generated from the preview name, file path, and module. |
+| `diff_threshold` | Allowed visual difference for this snapshot. See details below. |
+| `tags` | Optional key-value pairs used to filter and group snapshots in Sentry. |
+| `context` | Supporting metadata such as test name, simulator info, orientation, color scheme, source line, preview attributes, and any custom context you add. These fields are surfaced on the snapshot detail page in Sentry's UI. |
+
+SnapshotPreviews adds these `context` keys by default when values are available: `test_name`, `accessibility_enabled`, `simulator.device_name`, `simulator.model_identifier`, `preview.index`, `preview.display_name`, `preview.container_type_name`, `preview.container_display_name`, `preview.preferred_color_scheme`, `preview.orientation`, and `preview.line`.
+
+Use `.snapshotAdditionalContext(...)` to add custom fields to `context`. Custom context is shallow-merged into the generated context, so a custom key such as `"test_name"` replaces the generated value. Supported custom values are strings, numbers, booleans, and nested objects.
+
+Use the `.snapshotDiffThreshold(...)` view modifier from the `SnapshotPreferences` product to customize the allowed visual difference for a specific preview. For example, `.snapshotDiffThreshold(0.05)` allows up to a 5% difference for that snapshot.
+
+```swift
+import SnapshotPreferences
+
+#Preview("Map") {
+  MapPreview()
+    .snapshotTags(["screen": "map"])
+    .snapshotAdditionalContext(["fixture": "city-route"])
+    .snapshotDiffThreshold(0.05)
+}
+```
 
 ## Tips
 
