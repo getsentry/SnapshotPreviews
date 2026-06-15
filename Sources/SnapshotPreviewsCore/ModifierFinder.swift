@@ -55,6 +55,10 @@ public struct EmergeModifierView: View {
     stateMirror?.descendant("additionalContext") as? [String: SnapshotMetadataValue] ?? [:]
   }
 
+  var groupOverride: SnapshotGroup? {
+    stateMirror?.descendant("groupOverride") as? SnapshotGroup
+  }
+
   var supportsExpansion: Bool {
     stateMirror?.descendant("expansionPreference") as? Bool ?? true
   }

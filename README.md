@@ -149,7 +149,7 @@ Each `.json` sidecar contains the following fields:
 | Field | Description |
 | --- | --- |
 | `display_name` | Snapshot name shown in Sentry. Generated from the preview name, file path, and module so exported filenames stay stable and unambiguous. |
-| `group` | Grouping key Sentry uses to organize related snapshots. Generated from the preview name, file path, and module. |
+| `group` | Grouping key Sentry uses to organize related snapshots. Generated from the preview name, file path, and module by default. |
 | `diff_threshold` | Allowed visual difference for this snapshot. See details below. |
 | `tags` | Optional key-value pairs used to filter and group snapshots in Sentry. |
 | `context` | Supporting metadata such as test name, simulator info, orientation, color scheme, source line, preview attributes, and any custom context you add. These fields are surfaced on the snapshot detail page in Sentry's UI. |
@@ -157,6 +157,8 @@ Each `.json` sidecar contains the following fields:
 SnapshotPreviews adds these `context` keys by default when values are available: `test_name`, `accessibility_enabled`, `simulator.device_name`, `simulator.model_identifier`, `preview.index`, `preview.display_name`, `preview.container_type_name`, `preview.container_display_name`, `preview.preferred_color_scheme`, `preview.orientation`, and `preview.line`.
 
 Use `.snapshotAdditionalContext(...)` to add custom fields to `context`. Custom context is shallow-merged into the generated context, so a custom key such as `"test_name"` replaces the generated value. Supported custom values are strings, numbers, booleans, and nested objects.
+
+Use `.snapshotGroup(...)` to override the default `group` behaviour in the Sentry Snapshots UI. Pass a custom string such as `.snapshotGroup("Checkout")`, or a strategy: `.snapshotGroup(.module)` which groups by the preview container's module name.
 
 Use the `.snapshotDiffThreshold(...)` view modifier from the `SnapshotPreferences` product to customize the allowed visual difference for a specific preview. For example, `.snapshotDiffThreshold(0.05)` allows up to a 5% difference for that snapshot.
 
@@ -167,6 +169,7 @@ import SnapshotPreferences
   MapPreview()
     .snapshotTags(["screen": "map"])
     .snapshotAdditionalContext(["fixture": "city-route"])
+    .snapshotGroup("Navigation")
     .snapshotDiffThreshold(0.05)
 }
 ```
@@ -218,6 +221,7 @@ Link the `SnapshotPreferences` product to your app target to customize individua
 | `.snapshotExpansion(false)` | You want to preserve the visible scroll viewport instead of capturing all scroll content. | By default, scroll views are expanded so the snapshot includes their full content. Setting this to `false` keeps the scroll view at its normal visible height. |
 | `.snapshotTags(["area": "checkout"])` | You want searchable labels on the exported snapshot. | Adds top-level `tags` to the JSON sidecar. Repeated tag modifiers merge, and later duplicate keys win. |
 | `.snapshotAdditionalContext(["fixture": "loaded"])` | You want extra sidecar metadata for debugging or filtering. | Adds fields to the JSON sidecar `context` object. Repeated context modifiers merge, and later duplicate keys win. Custom keys override generated context keys. |
+| `.snapshotGroup("Checkout")` | You want to control how related snapshots are grouped in Sentry. | Overrides the top-level `group` in the JSON sidecar. Also accepts `.snapshotGroup(.module)` to group by the preview container's module name, and `.snapshotGroup(.default)` to keep the generated group. Empty or whitespace-only custom strings fall back to the generated group. Does not change exported filenames or all-image-names manifest output. |
 | `.snapshotDiffThreshold(0.05)` | A snapshot has small expected pixel differences. | Sets `diff_threshold` in the exported sidecar for this preview. `0.05` allows up to a 5% changed-pixel share before Sentry marks the image as changed. |
 
 ### Variants

@@ -47,7 +47,7 @@ public class AppKitRenderingStrategy: RenderingStrategy {
     window.contentViewController = NSViewController()
     window.setContentSize(AppKitContainer.defaultSize)
     window.contentViewController = vc
-    vc.rendered = { [weak window, weak vc] mode, precision, accessibilityEnabled, appStoreSnapshot, tags, additionalContext in
+    vc.rendered = { [weak window, weak vc] mode, precision, accessibilityEnabled, appStoreSnapshot, tags, additionalContext, groupOverride in
       DispatchQueue.main.async {
         Self.takeSnapshot(mode: mode ?? .nsView, viewController: vc, window: window) { image in
           completion(
@@ -58,7 +58,8 @@ public class AppKitRenderingStrategy: RenderingStrategy {
               colorScheme: _colorScheme,
               appStoreSnapshot: appStoreSnapshot,
               tags: tags,
-              additionalContext: additionalContext))
+              additionalContext: additionalContext,
+              groupOverride: groupOverride))
         }
       }
     }
@@ -118,7 +119,7 @@ final class AppKitContainer: NSHostingController<EmergeModifierView>, ScrollExpa
   var heightAnchor: NSLayoutConstraint?
   var previousHeight: CGFloat?
 
-  public var rendered: ((EmergeRenderingMode?, Float?, Bool?, Bool?, [String: String], [String: SnapshotMetadataValue]) -> Void)? {
+  public var rendered: ((EmergeRenderingMode?, Float?, Bool?, Bool?, [String: String], [String: SnapshotMetadataValue], SnapshotGroup?) -> Void)? {
     didSet { didCall = false }
   }
 
@@ -168,7 +169,7 @@ final class AppKitContainer: NSHostingController<EmergeModifierView>, ScrollExpa
     guard !didCall else { return }
 
     didCall = true
-    rendered?(rootView.emergeRenderingMode, rootView.precision, rootView.accessibilityEnabled, rootView.appStoreSnapshot, rootView.tags, rootView.additionalContext)
+    rendered?(rootView.emergeRenderingMode, rootView.precision, rootView.accessibilityEnabled, rootView.appStoreSnapshot, rootView.tags, rootView.additionalContext, rootView.groupOverride)
   }
 
   override func updateViewConstraints() {

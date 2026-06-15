@@ -353,7 +353,8 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
         accessibilityEnabled: result.accessibilityEnabled,
         colorScheme: colorSchemeValue,
         tags: result.tags,
-        additionalContext: result.additionalContext)
+        additionalContext: result.additionalContext,
+        groupOverride: result.groupOverride)
       coordinator.enqueueExport(result: result, context: context)
     } else {
       do {

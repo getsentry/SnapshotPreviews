@@ -35,6 +35,7 @@ struct SnapshotContext: Sendable {
   let colorScheme: String?
   let tags: [String: String]
   let additionalContext: [String: SnapshotMetadataValue]
+  let groupOverride: SnapshotGroup?
 }
 
 // MARK: - Sidecar Model
@@ -250,6 +251,33 @@ final class SnapshotCIExportCoordinator: NSObject, XCTestObservation {
     )
   }
 
+  /// Resolves the top-level sidecar `group`, preferring the author-declared override
+  /// and falling back to the generated canonical group.
+  static func resolvedGroup(for context: SnapshotContext) -> String {
+    lazy var fallback = canonicalGroup(
+      fileId: context.fileId,
+      typeDisplayName: context.typeDisplayName,
+      typeName: context.typeName
+    )
+
+    switch context.groupOverride {
+    case .none, .default:
+      return fallback
+    case .custom(let group):
+      let trimmed = group.trimmingCharacters(in: .whitespacesAndNewlines)
+      return trimmed.isEmpty ? fallback : trimmed
+    case .module:
+      return moduleName(from: context.typeName) ?? fallback
+    }
+  }
+
+  private static func moduleName(from typeName: String) -> String? {
+    guard let dotIndex = typeName.firstIndex(of: "."), dotIndex != typeName.startIndex else {
+      return nil
+    }
+    return String(typeName[..<dotIndex])
+  }
+
   private static func canonicalDisplayName(for context: SnapshotContext) -> String {
     if let previewDisplayName = context.previewDisplayName, !previewDisplayName.isEmpty {
       return previewDisplayName
@@ -274,11 +302,7 @@ final class SnapshotCIExportCoordinator: NSObject, XCTestObservation {
     let jsonFileName = context.sidecarFileName
 
     let displayName = Self.canonicalDisplayName(for: context)
-    let group = Self.canonicalGroup(
-      fileId: context.fileId,
-      typeDisplayName: context.typeDisplayName,
-      typeName: context.typeName
-    )
+    let group = Self.resolvedGroup(for: context)
     let exportDir = exportDirectoryURL
     
     guard case .success(let image) = result.image else { return }

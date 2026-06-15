@@ -14,6 +14,14 @@ struct SnapshotTagsPreferenceKey: PreferenceKey {
   }
 }
 
+struct SnapshotGroupPreferenceKey: PreferenceKey {
+  static var defaultValue: SnapshotGroup? = nil
+
+  static func reduce(value: inout SnapshotGroup?, nextValue: () -> SnapshotGroup?) {
+    value = nextValue() ?? value
+  }
+}
+
 struct SnapshotAdditionalContextPreferenceKey: PreferenceKey {
   static var defaultValue: [String: SnapshotMetadataValue] = [:]
 
@@ -44,5 +52,23 @@ extension View {
       key: SnapshotAdditionalContextPreferenceKey.self,
       value: SnapshotMetadataValue.dictionary(from: context)
     )
+  }
+
+  /// Overrides the top-level `group` field in the exported snapshot sidecar.
+  ///
+  /// If the same group modifier is set more than once, the later modifier value is used.
+  /// This changes only JSON sidecar metadata — exported PNG/JSON filenames are unaffected.
+  public func snapshotGroup(_ group: String) -> some View {
+    snapshotGroup(.custom(group))
+  }
+
+  /// Overrides the top-level `group` field in the exported snapshot sidecar using a strategy.
+  ///
+  /// `.default` keeps the generated group, `.custom` uses the provided name, and `.module`
+  /// groups by the preview container's module name. If the same group modifier is set more
+  /// than once, the later modifier value is used. This changes only JSON sidecar metadata —
+  /// exported PNG/JSON filenames are unaffected.
+  public func snapshotGroup(_ group: SnapshotGroup) -> some View {
+    preference(key: SnapshotGroupPreferenceKey.self, value: group)
   }
 }

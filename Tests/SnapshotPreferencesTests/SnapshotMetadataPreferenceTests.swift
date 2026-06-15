@@ -37,6 +37,52 @@ final class SnapshotMetadataPreferenceTests: XCTestCase {
     XCTAssertEqual(value["is_retry"], .bool(true))
   }
 
+  func testGroupPreferenceDefaultsToNil() {
+    XCTAssertNil(SnapshotGroupPreferenceKey.defaultValue)
+  }
+
+  func testGroupPreferenceLaterValueWins() {
+    var value = SnapshotGroupPreferenceKey.defaultValue
+
+    SnapshotGroupPreferenceKey.reduce(value: &value) { .custom("First") }
+    SnapshotGroupPreferenceKey.reduce(value: &value) { .custom("Second") }
+
+    XCTAssertEqual(value, .custom("Second"))
+  }
+
+  func testGroupPreferenceKeepsCurrentValueWhenNextValueIsNil() {
+    var value = SnapshotGroupPreferenceKey.defaultValue
+
+    SnapshotGroupPreferenceKey.reduce(value: &value) { .custom("Checkout") }
+    SnapshotGroupPreferenceKey.reduce(value: &value) { nil }
+
+    XCTAssertEqual(value, .custom("Checkout"))
+  }
+
+  func testGroupPreferenceStoresCustomString() {
+    var value = SnapshotGroupPreferenceKey.defaultValue
+
+    SnapshotGroupPreferenceKey.reduce(value: &value) { .custom("Checkout") }
+
+    XCTAssertEqual(value, .custom("Checkout"))
+  }
+
+  func testGroupPreferenceStoresDefaultStrategy() {
+    var value = SnapshotGroupPreferenceKey.defaultValue
+
+    SnapshotGroupPreferenceKey.reduce(value: &value) { .default }
+
+    XCTAssertEqual(value, .default)
+  }
+
+  func testGroupPreferenceStoresModuleStrategy() {
+    var value = SnapshotGroupPreferenceKey.defaultValue
+
+    SnapshotGroupPreferenceKey.reduce(value: &value) { .module }
+
+    XCTAssertEqual(value, .module)
+  }
+
   func testMetadataValueConvertsSupportedPublicTypes() {
     let metadata = SnapshotMetadataValue.dictionary(from: [
       "string": "value",
