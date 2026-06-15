@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SnapshotPreferences
 
 struct InfoCardView: View {
     var title: String
@@ -49,5 +50,6 @@ struct InfoCardView_Previews: PreviewProvider {
                 .previewLayout(.sizeThatFits)
                 .padding()
         }
+        .snapshotGroup("Card Views")
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SnapshotPreferences
 
 struct ProductCardView: View {
     var imageName: String
@@ -45,5 +46,6 @@ struct ProductCardView_Previews: PreviewProvider {
             ProductCardView(imageName: "product-image", productName: "Sample Product 2", price: 49.99)
             .previewLayout(.sizeThatFits)
         }
+        .snapshotGroup("Card Views")
     }
 }

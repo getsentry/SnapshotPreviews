@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import SnapshotPreferences
 
 struct OSVersionView: View {
     var body: some View {
@@ -35,5 +36,6 @@ struct OSVersionView: View {
 struct OSVersionView_Previews: PreviewProvider {
     static var previews: some View {
         OSVersionView()
+        .snapshotGroup(.module)
     }
 }
