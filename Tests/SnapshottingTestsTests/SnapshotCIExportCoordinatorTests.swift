@@ -252,6 +252,124 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     XCTAssertEqual(json["group"] as? String, "MyModule.TestView_Previews")
   }
 
+  // MARK: - Group Override
+
+  func testSidecarGroupUsesTrimmedCustomOverride() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let context = makeContext(
+      baseFileName: "TestView_CustomGroup",
+      groupOverride: .custom("  Checkout  ")
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
+
+    XCTAssertEqual(json["group"] as? String, "Checkout")
+  }
+
+  func testSidecarGroupFallsBackToGeneratedGroupForEmptyCustomOverride() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let context = makeContext(
+      baseFileName: "TestView_EmptyGroup",
+      groupOverride: .custom("   ")
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
+
+    XCTAssertEqual(json["group"] as? String, "Test View")
+  }
+
+  func testSidecarGroupDefaultOverrideMatchesGeneratedGroup() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let context = makeContext(
+      baseFileName: "TestView_DefaultGroup",
+      groupOverride: .default
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
+
+    XCTAssertEqual(json["group"] as? String, "Test View")
+  }
+
+  func testSidecarGroupModuleOverrideUsesModuleName() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let context = makeContext(
+      baseFileName: "TestView_ModuleGroup",
+      typeName: "MyModule.TestView_Previews",
+      fileId: "Feature/TestView.swift",
+      line: 42,
+      groupOverride: .module
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
+
+    XCTAssertEqual(json["group"] as? String, "MyModule")
+  }
+
+  func testSidecarGroupModuleOverrideFallsBackForUnqualifiedTypeName() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let context = makeContext(
+      baseFileName: "TestView_ModuleFallback",
+      typeName: "TestView_Previews",
+      groupOverride: .module
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
+
+    XCTAssertEqual(json["group"] as? String, "Test View")
+  }
+
+  func testAdditionalContextGroupKeyStaysNestedUnderContext() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let context = makeContext(
+      baseFileName: "TestView_NestedGroupKey",
+      additionalContext: ["group": .string("nested-group")]
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
+    let nestedContext = try XCTUnwrap(json["context"] as? [String: Any])
+
+    XCTAssertEqual(json["group"] as? String, "Test View")
+    XCTAssertEqual(nestedContext["group"] as? String, "nested-group")
+  }
+
+  func testGroupOverrideDoesNotChangeExportedFileNames() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let baseFileName = makeRawBaseFileName(
+      previewDisplayName: "Dark Mode",
+      displayNameOccurrenceCount: 1
+    )
+    let context = makeContext(
+      baseFileName: baseFileName,
+      groupOverride: .custom("Checkout")
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    XCTAssertEqual(context.imageFileName, "Test_View_Dark_Mode.png")
+    XCTAssertEqual(context.sidecarFileName, "Test_View_Dark_Mode.json")
+    XCTAssertTrue(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent("Test_View_Dark_Mode.png").path))
+    XCTAssertTrue(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent("Test_View_Dark_Mode.json").path))
+  }
+
   func testSidecarNestsContextFieldsUnderContextKey() throws {
     let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
     let context = makeContext(
@@ -485,7 +603,8 @@ extension SnapshotCIExportCoordinatorTests {
     diffThreshold: Float? = nil,
     colorScheme: String? = nil,
     tags: [String: String] = [:],
-    additionalContext: [String: SnapshotMetadataValue] = [:]
+    additionalContext: [String: SnapshotMetadataValue] = [:],
+    groupOverride: SnapshotGroup? = nil
   ) -> SnapshotContext {
     SnapshotContext(
       imageFileName: FileNameUtils.imageFileName(from: baseFileName),
@@ -503,7 +622,8 @@ extension SnapshotCIExportCoordinatorTests {
       accessibilityEnabled: nil,
       colorScheme: colorScheme,
       tags: tags,
-      additionalContext: additionalContext
+      additionalContext: additionalContext,
+      groupOverride: groupOverride
     )
   }
 

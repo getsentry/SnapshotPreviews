@@ -32,7 +32,8 @@ public struct SnapshotResult {
     colorScheme: ColorScheme?,
     appStoreSnapshot: Bool?,
     tags: [String: String] = [:],
-    additionalContext: [String: SnapshotMetadataValue] = [:])
+    additionalContext: [String: SnapshotMetadataValue] = [:],
+    groupOverride: SnapshotGroup? = nil)
   {
     self.image = image
     self.precision = precision
@@ -41,6 +42,7 @@ public struct SnapshotResult {
     self.appStoreSnapshot = appStoreSnapshot
     self.tags = tags
     self.additionalContext = additionalContext
+    self.groupOverride = groupOverride
   }
 
   public let image: Result<ImageType, Error>
@@ -50,6 +52,7 @@ public struct SnapshotResult {
   public let appStoreSnapshot: Bool?
   public let tags: [String: String]
   public let additionalContext: [String: SnapshotMetadataValue]
+  public let groupOverride: SnapshotGroup?
 }
 
 public protocol RenderingStrategy {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SnapshotPreferences
 
 struct TripCardView: View {
     var destination: String
@@ -51,5 +52,6 @@ struct TripCardView_Previews: PreviewProvider {
                      imageName: "product-image")
             .previewLayout(.device)
             .padding()
+            .snapshotGroup("Card Views")
     }
 }

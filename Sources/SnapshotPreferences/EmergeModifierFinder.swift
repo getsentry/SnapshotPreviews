@@ -27,6 +27,7 @@ class EmergeModifierState: NSObject {
     appStoreSnapshot = nil
     tags = [:]
     additionalContext = [:]
+    groupOverride = nil
   }
 
   var expansionPreference: Bool?
@@ -36,6 +37,7 @@ class EmergeModifierState: NSObject {
   var appStoreSnapshot: Bool?
   var tags: [String: String] = [:]
   var additionalContext: [String: SnapshotMetadataValue] = [:]
+  var groupOverride: SnapshotGroup?
 }
 
 @objc(EmergeModifierFinder)
@@ -63,6 +65,9 @@ class EmergeModifierFinder: NSObject {
       })
       .onPreferenceChange(SnapshotAdditionalContextPreferenceKey.self, perform: { value in
         EmergeModifierState.shared.additionalContext = value
+      })
+      .onPreferenceChange(SnapshotGroupPreferenceKey.self, perform: { value in
+        EmergeModifierState.shared.groupOverride = value
       })
   }
 }

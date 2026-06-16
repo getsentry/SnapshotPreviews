@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SnapshotPreferences
 
 struct FeatureCardView: View {
     var imageName: String
@@ -45,5 +46,6 @@ struct FeatureCardView_Previews: PreviewProvider {
                         description: "This is a description of the feature and its benefits.")
             .previewLayout(.sizeThatFits)
             .padding()
+            .snapshotGroup("Card Views")
     }
 }
