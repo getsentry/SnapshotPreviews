@@ -354,7 +354,8 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
         colorScheme: colorSchemeValue,
         tags: result.tags,
         additionalContext: result.additionalContext,
-        groupOverride: result.groupOverride)
+        groupOverride: result.groupOverride,
+        canvasTheme: result.canvasTheme)
       coordinator.enqueueExport(result: result, context: context)
     } else {
       do {

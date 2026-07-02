@@ -33,7 +33,8 @@ public struct SnapshotResult {
     appStoreSnapshot: Bool?,
     tags: [String: String] = [:],
     additionalContext: [String: SnapshotMetadataValue] = [:],
-    groupOverride: SnapshotGroup? = nil)
+    groupOverride: SnapshotGroup? = nil,
+    canvasTheme: SnapshotCanvasTheme? = nil)
   {
     self.image = image
     self.precision = precision
@@ -43,6 +44,7 @@ public struct SnapshotResult {
     self.tags = tags
     self.additionalContext = additionalContext
     self.groupOverride = groupOverride
+    self.canvasTheme = canvasTheme
   }
 
   public let image: Result<ImageType, Error>
@@ -53,6 +55,7 @@ public struct SnapshotResult {
   public let tags: [String: String]
   public let additionalContext: [String: SnapshotMetadataValue]
   public let groupOverride: SnapshotGroup?
+  public let canvasTheme: SnapshotCanvasTheme?
 }
 
 public protocol RenderingStrategy {
@@ -68,4 +71,3 @@ extension RenderingStrategy {
     testHandler?.perform(NSSelectorFromString("setup"))
   }
 }
-

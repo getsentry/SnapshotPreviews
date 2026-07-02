@@ -28,6 +28,7 @@ class EmergeModifierState: NSObject {
     tags = [:]
     additionalContext = [:]
     groupOverride = nil
+    canvasTheme = nil
   }
 
   var expansionPreference: Bool?
@@ -38,6 +39,7 @@ class EmergeModifierState: NSObject {
   var tags: [String: String] = [:]
   var additionalContext: [String: SnapshotMetadataValue] = [:]
   var groupOverride: SnapshotGroup?
+  var canvasTheme: SnapshotCanvasTheme?
 }
 
 @objc(EmergeModifierFinder)
@@ -68,6 +70,9 @@ class EmergeModifierFinder: NSObject {
       })
       .onPreferenceChange(SnapshotGroupPreferenceKey.self, perform: { value in
         EmergeModifierState.shared.groupOverride = value
+      })
+      .onPreferenceChange(SnapshotCanvasThemePreferenceKey.self, perform: { value in
+        EmergeModifierState.shared.canvasTheme = value
       })
   }
 }

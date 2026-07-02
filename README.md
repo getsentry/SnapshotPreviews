@@ -152,6 +152,7 @@ Each `.json` sidecar contains the following fields:
 | `group` | Grouping key Sentry uses to organize related snapshots. Generated from the preview name, file path, and module by default. |
 | `diff_threshold` | Allowed visual difference for this snapshot. See details below. |
 | `tags` | Optional key-value pairs used to filter and group snapshots in Sentry. |
+| `canvas_theme` | Optional `"light"` or `"dark"` value that controls the background canvas used to display the snapshot image in Sentry's web UI. |
 | `context` | Supporting metadata such as test name, simulator info, orientation, color scheme, source line, preview attributes, and any custom context you add. These fields are surfaced on the snapshot detail page in Sentry's UI. |
 
 SnapshotPreviews adds these `context` keys by default when values are available: `test_name`, `accessibility_enabled`, `simulator.device_name`, `simulator.model_identifier`, `preview.index`, `preview.display_name`, `preview.container_type_name`, `preview.container_display_name`, `preview.preferred_color_scheme`, `preview.orientation`, and `preview.line`.
@@ -162,6 +163,8 @@ Use `.snapshotGroup(...)` to override the default `group` behaviour in the Sentr
 
 Use the `.snapshotDiffThreshold(...)` view modifier from the `SnapshotPreferences` product to customize the allowed visual difference for a specific preview. For example, `.snapshotDiffThreshold(0.05)` allows up to a 5% difference for that snapshot.
 
+Use `.snapshotCanvasTheme(...)` to set the light or dark canvas used behind the image in Sentry's web UI. This is display metadata only; it does not change the rendered snapshot image.
+
 ```swift
 import SnapshotPreferences
 
@@ -171,6 +174,7 @@ import SnapshotPreferences
     .snapshotAdditionalContext(["fixture": "city-route"])
     .snapshotGroup("Navigation")
     .snapshotDiffThreshold(0.05)
+    .snapshotCanvasTheme(.dark)
 }
 ```
 
@@ -223,6 +227,7 @@ Link the `SnapshotPreferences` product to your app target to customize individua
 | `.snapshotAdditionalContext(["fixture": "loaded"])` | You want extra sidecar metadata for debugging or filtering. | Adds fields to the JSON sidecar `context` object. Repeated context modifiers merge, and later duplicate keys win. Custom keys override generated context keys. |
 | `.snapshotGroup("Checkout")` | You want to control how related snapshots are grouped in Sentry. | Overrides the top-level `group` in the JSON sidecar. Also accepts `.snapshotGroup(.module)` to group by the preview container's module name, and `.snapshotGroup(.default)` to keep the generated group. Empty or whitespace-only custom strings fall back to the generated group. Does not change exported filenames or all-image-names manifest output. |
 | `.snapshotDiffThreshold(0.05)` | A snapshot has small expected pixel differences. | Sets `diff_threshold` in the exported sidecar for this preview. `0.05` allows up to a 5% changed-pixel share before Sentry marks the image as changed. |
+| `.snapshotCanvasTheme(.dark)` | A transparent or framed image should be shown on a specific light/dark canvas in Sentry. | Sets top-level `canvas_theme` to `"light"` or `"dark"` in the JSON sidecar. Does not change the rendered snapshot image. |
 
 ### Variants
 

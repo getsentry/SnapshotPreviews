@@ -33,6 +33,14 @@ struct SnapshotAdditionalContextPreferenceKey: PreferenceKey {
   }
 }
 
+struct SnapshotCanvasThemePreferenceKey: PreferenceKey {
+  static var defaultValue: SnapshotCanvasTheme? = nil
+
+  static func reduce(value: inout SnapshotCanvasTheme?, nextValue: () -> SnapshotCanvasTheme?) {
+    value = nextValue() ?? value
+  }
+}
+
 extension View {
   /// Adds tags to the exported snapshot sidecar.
   ///
@@ -70,5 +78,13 @@ extension View {
   /// exported PNG/JSON filenames are unaffected.
   public func snapshotGroup(_ group: SnapshotGroup) -> some View {
     preference(key: SnapshotGroupPreferenceKey.self, value: group)
+  }
+
+  /// Sets the top-level `canvas_theme` field in the exported snapshot sidecar.
+  ///
+  /// This controls the light or dark canvas used when displaying the snapshot image in
+  /// Sentry's web UI. It does not change the rendered snapshot image itself.
+  public func snapshotCanvasTheme(_ canvasTheme: SnapshotCanvasTheme) -> some View {
+    preference(key: SnapshotCanvasThemePreferenceKey.self, value: canvasTheme)
   }
 }

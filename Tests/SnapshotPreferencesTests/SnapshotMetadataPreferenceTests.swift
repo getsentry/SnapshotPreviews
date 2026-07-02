@@ -83,6 +83,17 @@ final class SnapshotMetadataPreferenceTests: XCTestCase {
     XCTAssertEqual(value, .module)
   }
 
+  func testCanvasThemePreference() {
+    var value = SnapshotCanvasThemePreferenceKey.defaultValue
+    XCTAssertNil(value)
+
+    SnapshotCanvasThemePreferenceKey.reduce(value: &value) { .light }
+    XCTAssertEqual(value, .light)
+
+    SnapshotCanvasThemePreferenceKey.reduce(value: &value) { .dark }
+    XCTAssertEqual(value, .dark)
+  }
+
   func testMetadataValueConvertsSupportedPublicTypes() {
     let metadata = SnapshotMetadataValue.dictionary(from: [
       "string": "value",

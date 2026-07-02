@@ -420,6 +420,21 @@ final class SnapshotCIExportCoordinatorTests: XCTestCase {
     XCTAssertEqual(tags["state"], "loading")
   }
 
+  func testSidecarIncludesCanvasThemeWhenProvided() throws {
+    let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
+    let context = makeContext(
+      baseFileName: "TestView_CanvasTheme",
+      canvasTheme: .dark
+    )
+
+    coordinator.enqueueExport(result: makeSuccessResult(), context: context)
+    coordinator.drain()
+
+    let json = try readJSON(forSidecarFileName: context.sidecarFileName)
+
+    XCTAssertEqual(json["canvas_theme"] as? String, "dark")
+  }
+
   func testSidecarMergesAdditionalContext() throws {
     let coordinator = SnapshotCIExportCoordinator(exportDirectoryURL: tempDir)
     let context = makeContext(
@@ -604,7 +619,8 @@ extension SnapshotCIExportCoordinatorTests {
     colorScheme: String? = nil,
     tags: [String: String] = [:],
     additionalContext: [String: SnapshotMetadataValue] = [:],
-    groupOverride: SnapshotGroup? = nil
+    groupOverride: SnapshotGroup? = nil,
+    canvasTheme: SnapshotCanvasTheme? = nil
   ) -> SnapshotContext {
     SnapshotContext(
       imageFileName: FileNameUtils.imageFileName(from: baseFileName),
@@ -623,7 +639,8 @@ extension SnapshotCIExportCoordinatorTests {
       colorScheme: colorScheme,
       tags: tags,
       additionalContext: additionalContext,
-      groupOverride: groupOverride
+      groupOverride: groupOverride,
+      canvasTheme: canvasTheme
     )
   }
 
