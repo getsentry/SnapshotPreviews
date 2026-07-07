@@ -144,26 +144,22 @@ These modes are mutually exclusive. If `TEST_RUNNER_SNAPSHOTS_ALL_IMAGE_NAMES_FI
 
 ### JSON sidecar schema
 
-Each `.json` sidecar contains the following fields:
+Each `.json` sidecar contains the following fields. The **Source** column shows where each value comes from: a [snapshot modifier](#snapshot-modifiers) you apply to the preview, or _Derived_ if SnapshotPreviews computes it automatically.
 
-| Field | Description |
-| --- | --- |
-| `display_name` | Snapshot name shown in Sentry. Generated from the preview name, file path, and module so exported filenames stay stable and unambiguous. |
-| `group` | Grouping key Sentry uses to organize related snapshots. Generated from the preview name, file path, and module by default. |
-| `diff_threshold` | Allowed visual difference for this snapshot. See details below. |
-| `tags` | Optional key-value pairs used to filter and group snapshots in Sentry. |
-| `canvas_theme` | Optional `"light"` or `"dark"` value that controls the background canvas used to display the snapshot image in Sentry's web UI. |
-| `context` | Supporting metadata such as test name, simulator info, orientation, color scheme, source line, preview attributes, and any custom context you add. These fields are surfaced on the snapshot detail page in Sentry's UI. |
+| Field | Type | Source | Description |
+| --- | --- | --- | --- |
+| `display_name` | string | Derived | Snapshot name shown in Sentry. Derived from the preview name, file path, and module so exported filenames stay stable and unambiguous. |
+| `group` | string | Derived, override with `.snapshotGroup(...)` | Grouping key Sentry uses to organize related snapshots. |
+| `diff_threshold` | number | `.snapshotDiffThreshold(...)` | Optional visual difference allowed before Sentry marks the image as changed. For example, `0.05` allows up to a 5% changed-pixel share. |
+| `tags` | object | `.snapshotTags(...)` | Optional key-value pairs used to filter and group snapshots in Sentry. |
+| `canvas_theme` | string | `.snapshotCanvasTheme(...)` | Optional `"light"` or `"dark"` background canvas used to display the image in Sentry's web UI. Display metadata only; it does not change the rendered snapshot. |
+| `context` | object | Derived, extend with `.snapshotAdditionalContext(...)` | Supporting metadata (test name, simulator info, orientation, color scheme, source line, preview attributes) surfaced on the snapshot detail page in Sentry, plus any custom context you add. |
 
 SnapshotPreviews adds these `context` keys by default when values are available: `test_name`, `accessibility_enabled`, `simulator.device_name`, `simulator.model_identifier`, `preview.index`, `preview.display_name`, `preview.container_type_name`, `preview.container_display_name`, `preview.preferred_color_scheme`, `preview.orientation`, and `preview.line`.
 
-Use `.snapshotAdditionalContext(...)` to add custom fields to `context`. Custom context is shallow-merged into the generated context, so a custom key such as `"test_name"` replaces the generated value. Supported custom values are strings, numbers, booleans, and nested objects.
+`tags` and `context` merge across repeated modifiers, with later duplicate keys winning; custom `context` keys override generated ones. An empty or whitespace-only `.snapshotGroup(...)` string falls back to the generated `group`. Custom `context` values may be strings, numbers, booleans, or nested objects.
 
-Use `.snapshotGroup(...)` to override the default `group` behaviour in the Sentry Snapshots UI. Pass a custom string such as `.snapshotGroup("Checkout")`, or a strategy: `.snapshotGroup(.module)` which groups by the preview container's module name.
-
-Use the `.snapshotDiffThreshold(...)` view modifier from the `SnapshotPreferences` product to customize the allowed visual difference for a specific preview. For example, `.snapshotDiffThreshold(0.05)` allows up to a 5% difference for that snapshot.
-
-Use `.snapshotCanvasTheme(...)` to set the light or dark canvas used behind the image in Sentry's web UI. This is display metadata only; it does not change the rendered snapshot image.
+For example, a preview configured like this:
 
 ```swift
 import SnapshotPreferences
@@ -175,6 +171,28 @@ import SnapshotPreferences
     .snapshotGroup("Navigation")
     .snapshotDiffThreshold(0.05)
     .snapshotCanvasTheme(.dark)
+}
+```
+
+produces a sidecar like this:
+
+```json
+{
+  "display_name": "Map",
+  "group": "Navigation",
+  "diff_threshold": 0.05,
+  "tags": { "screen": "map" },
+  "canvas_theme": "dark",
+  "context": {
+    "test_name": "MapPreviewTests",
+    "accessibility_enabled": false,
+    "simulator": { "device_name": "iPhone 15" },
+    "preview": {
+      "index": 0,
+      "preferred_color_scheme": "dark"
+    },
+    "fixture": "city-route"
+  }
 }
 ```
 
