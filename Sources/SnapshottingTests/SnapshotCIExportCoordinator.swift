@@ -36,6 +36,7 @@ struct SnapshotContext: Sendable {
   let tags: [String: String]
   let additionalContext: [String: SnapshotMetadataValue]
   let groupOverride: SnapshotGroup?
+  let canvasTheme: SnapshotCanvasTheme?
 }
 
 // MARK: - Sidecar Model
@@ -84,6 +85,7 @@ private struct SnapshotSidecar: Sendable, Encodable {
   let group: String
   let diffThreshold: Float?
   let tags: [String: String]?
+  let canvasTheme: SnapshotCanvasTheme?
   let context: [String: SnapshotMetadataValue]
 
   init(
@@ -95,6 +97,7 @@ private struct SnapshotSidecar: Sendable, Encodable {
     self.group = group
     self.diffThreshold = context.diffThreshold
     self.tags = context.tags.isEmpty ? nil : context.tags
+    self.canvasTheme = context.canvasTheme
 
     var generatedContext: [String: SnapshotMetadataValue] = [
       SnapshotSidecarContextKey.testName: .string(context.testName),

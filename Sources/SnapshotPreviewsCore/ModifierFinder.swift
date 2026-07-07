@@ -59,6 +59,10 @@ public struct EmergeModifierView: View {
     stateMirror?.descendant("groupOverride") as? SnapshotGroup
   }
 
+  var canvasTheme: SnapshotCanvasTheme? {
+    stateMirror?.descendant("canvasTheme") as? SnapshotCanvasTheme
+  }
+
   var supportsExpansion: Bool {
     stateMirror?.descendant("expansionPreference") as? Bool ?? true
   }
