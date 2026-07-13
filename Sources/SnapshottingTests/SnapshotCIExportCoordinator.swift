@@ -357,13 +357,17 @@ final class SnapshotCIExportCoordinator: NSObject, XCTestObservation {
     hasDrained = true
     stateLock.unlock()
 
+    SnapshotTiming.mark("drain_start")
     writeQueue.waitUntilAllOperationsAreFinished()
+    SnapshotTiming.mark("drain_end")
   }
 
   // MARK: - XCTestObservation
 
   func testBundleDidFinish(_ testBundle: Bundle) {
     drain()
+    SnapshotTiming.mark("bundle_finish")
+    SnapshotTiming.flush()
   }
 }
 

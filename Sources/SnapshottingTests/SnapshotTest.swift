@@ -236,6 +236,7 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
       ciExportCoordinator = nil
     }
 
+    SnapshotTiming.mark("discovery_start")
     previews = FindPreviews.findPreviews(
       included: Self.snapshotPreviews(),
       excluded: Self.excludedSnapshotPreviews(),
@@ -243,6 +244,7 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
       excludedModules: Self.excludedSnapshotPreviewModules()
     )
     fileNameResolver = FileNameResolver(previews: previews)
+    SnapshotTiming.mark("discovery_end")
 
     if let allSnapshotImageNamesWriter {
       allSnapshotImageNamesWriter.write(
@@ -316,11 +318,25 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
 
     var result: SnapshotResult? = nil
     let expectation = XCTestExpectation()
+    let timingStart = SnapshotTiming.nowNs()
     strategy.render(preview: preview) { snapshotResult in
       result = snapshotResult
       expectation.fulfill()
     }
     wait(for: [expectation], timeout: 10)
+    let timingEnd = SnapshotTiming.nowNs()
+    let timingStatus: String
+    switch result?.image {
+    case .some(.success): timingStatus = "ok"
+    case .some(.failure): timingStatus = "render_failed"
+    case .none: timingStatus = "timeout_10s"
+    }
+    SnapshotTiming.record(
+      label: "\(previewType.displayName).\(discoveredPreview.index)",
+      startNs: timingStart,
+      endNs: timingEnd,
+      status: timingStatus,
+      a11y: result?.accessibilityEnabled == true)
     guard let result else {
       XCTFail("Did not render")
       return
