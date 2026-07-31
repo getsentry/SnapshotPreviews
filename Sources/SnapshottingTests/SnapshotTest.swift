@@ -8,6 +8,7 @@
 import Foundation
 @_implementationOnly import SnapshotPreviewsCore
 import enum SwiftUI.ColorScheme
+import protocol SwiftUI.ViewModifier
 import XCTest
 
 extension ColorScheme {
@@ -302,29 +303,22 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
     let preview = previewType.previews[discoveredPreview.index]
 
     // Lazily create the rendering strategy
-    let strategy: RenderingStrategy
-    if let existing = Self.renderingStrategy {
-      strategy = existing
-    } else {
+    if Self.renderingStrategy == nil {
       #if canImport(UIKit) && !os(watchOS) && !os(visionOS) && !os(tvOS)
-      strategy = Self.makeRenderingStrategy(a11y: Self.setupA11y())
+      let strategy = Self.makeRenderingStrategy(a11y: Self.setupA11y())
       #else
-      strategy = Self.makeRenderingStrategy()
+      let strategy = Self.makeRenderingStrategy()
       #endif
       Self.renderingStrategy = strategy
     }
 
-    var result: SnapshotResult? = nil
-    let expectation = XCTestExpectation()
-    strategy.render(preview: preview) { snapshotResult in
-      result = snapshotResult
-      expectation.fulfill()
-    }
-    wait(for: [expectation], timeout: 10)
-    guard let result else {
-      XCTFail("Did not render")
+    let renderInput = Preview(contents: .init(previewType: previewType, preview: preview))
+    guard let output = render(renderInput) else {
+      // skipped
       return
     }
+
+    let result = output.contents.result
 
     guard let rawBaseFileName = Self.fileNameResolver.rawBaseFileName(
       typeName: previewType.typeName,
@@ -367,5 +361,79 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
         XCTFail("Error \(error)")
       }
     }
+  }
+
+  /// The preview to render in ``SnapshotTest/render(_:)``.
+  public struct Preview {
+    final class Contents {
+      // We need this and RenderOutput.Contents because the SnapshotPreviewsCore import
+      // is @_implementationOnly, so clients don't know these types' layouts. Changing to
+      // struct compiles, but triggers a compiler crash at external use sites.
+
+      let previewType: SnapshotPreviewsCore.PreviewType
+      let preview: SnapshotPreviewsCore.Preview
+
+      init(previewType: SnapshotPreviewsCore.PreviewType, preview: SnapshotPreviewsCore.Preview) {
+        self.previewType = previewType
+        self.preview = preview
+      }
+    }
+
+    var contents: Contents
+
+    public var typeName: String {
+      contents.previewType.typeName
+    }
+
+    /// Returns a new `Preview` with the given `ViewModifier` applied.
+    public func modifier(_ modifier: some ViewModifier) -> Self {
+      var copy = self
+      // copy Contents to maintain value semantics
+      copy.contents = Contents(
+        previewType: contents.previewType,
+        preview: contents.preview.modifier(modifier)
+      )
+      return copy
+    }
+  }
+
+  /// An opaque type that represents the result of ``SnapshotTest/render(_:)``.
+  public struct RenderOutput {
+    final class Contents {
+      let result: SnapshotResult
+
+      init(result: SnapshotResult) {
+        self.result = result
+      }
+    }
+
+    var contents: Contents
+  }
+
+  /// Renders the given preview.
+  /// 
+  /// You may override this to perform custom setup or teardown around the rendering process.
+  /// If you do so, either return the result of `super.render(_:)`, or return `nil` to skip.
+  @MainActor
+  open func render(_ preview: Preview) -> RenderOutput? {
+    guard let strategy = Self.renderingStrategy else {
+      XCTFail("Missing rendering strategy")
+      return nil
+    }
+
+    var result: SnapshotResult? = nil
+    let expectation = XCTestExpectation()
+    strategy.render(preview: preview.contents.preview) { snapshotResult in
+      result = snapshotResult
+      expectation.fulfill()
+    }
+    wait(for: [expectation], timeout: 10)
+
+    guard let result else {
+      XCTFail("Did not render")
+      return nil
+    }
+
+    return RenderOutput(contents: .init(result: result))
   }
 }

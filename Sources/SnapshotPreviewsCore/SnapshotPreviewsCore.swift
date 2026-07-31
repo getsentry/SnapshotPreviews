@@ -82,9 +82,23 @@ public struct Preview: Identifiable {
   public let index: Int
   public let device: PreviewDevice?
   public let layout: PreviewLayout
-  private let _view: @MainActor () -> any View
+  private var _view: @MainActor () -> any View
   @MainActor public func view() -> any View {
     _view()
+  }
+}
+
+extension Preview {
+  public func modifier(_ modifier: some ViewModifier) -> Self {
+    var copy = self
+    let originalView = copy._view
+    copy._view = {
+      func modify(_ view: some View) -> some View {
+        view.modifier(modifier)
+      }
+      return modify(originalView())
+    }
+    return copy
   }
 }
 
