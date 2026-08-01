@@ -9,6 +9,7 @@ public struct Preview: Identifiable {
     displayName = preview.displayName
     device = preview.device
     layout = preview.layout
+    _modifiers = []
     _view = {
       ViewSelectorTree(SnapshotViewModel(index: preview.id)) {
         P.previews
@@ -26,10 +27,14 @@ public struct Preview: Identifiable {
     let preview = Mirror(reflecting: preview)
     let traits = preview.descendant("traits")! as! [Any]
     var layout = PreviewLayout.device
+    var modifiers: [Any] = []
     for t in traits {
       if let value = Mirror(reflecting: t).descendant("value") {
         if let value = value as? PreviewLayout {
           layout = value
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, tvOS 18.0, *),
+               let traitModifiers = value as? [any PreviewModifier] {
+          modifiers += traitModifiers
         } else if String(describing: value).hasSuffix(".portraitUpsideDown") {
           orientation = .portraitUpsideDown
         } else if String(describing: value).hasSuffix(".landscapeLeft") {
@@ -39,6 +44,7 @@ public struct Preview: Identifiable {
         }
       }
     }
+    self._modifiers = modifiers
     self.orientation = orientation
     self.layout = layout
     displayName = preview.descendant("displayName") as? String
@@ -82,6 +88,14 @@ public struct Preview: Identifiable {
   public let index: Int
   public let device: PreviewDevice?
   public let layout: PreviewLayout
+
+  // we can't store `[any PreviewModifier]` because it's unavailable before iOS 18 et al
+  private let _modifiers: [Any]
+  @available(iOS 18.0, macOS 15.0, watchOS 11.0, tvOS 18.0, *)
+  public var modifiers: [any PreviewModifier] {
+    _modifiers as? [any PreviewModifier] ?? []
+  }
+
   private let _view: @MainActor () -> any View
   @MainActor public func view() -> any View {
     _view()
