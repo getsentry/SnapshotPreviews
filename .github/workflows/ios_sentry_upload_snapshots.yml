@@ -337,7 +337,7 @@ jobs:
           echo "Total PNG images: $(find "${SNAPSHOT_UPLOAD_BASE_DIR}" -type f -name '*.png' | wc -l | tr -d ' ')"
 
       - name: Install sentry-cli
-        run: curl -sL https://sentry.io/get-cli/ | bash
+        uses: getsentry/action-setup-cli@70d7e587b84c2e78cf4d37cd33d7b74fb3729c1b # v1
 
       # Upload the rendered snapshot files. On pull requests,
       # --all-image-file-names-file points Sentry at the full manifest so it can
