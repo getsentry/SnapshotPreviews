@@ -9,5 +9,19 @@ import _Concurrency
 import _StringProcessing
 import _SwiftConcurrencyShims
 public protocol MakeViewProvider {
-  var makeView: @_Concurrency.MainActor () -> any SwiftUI.View { get }
+  var makeView: @_Concurrency.MainActor () -> any SwiftUICore.View { get }
 }
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+@_Concurrency.MainActor @preconcurrency public struct AnyViewModifier<M> : SwiftUICore.ViewModifier where M : SwiftUI.PreviewModifier, M.Context == () {
+  @_Concurrency.MainActor @preconcurrency public init(_ modifier: M)
+  @_Concurrency.MainActor @preconcurrency public func body(content: PreviewsSupport.AnyViewModifier<M>.Content) -> some SwiftUICore.View
+  
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, macOS 15.0, *)
+  public typealias Body = @_opaqueReturnTypeOf("$s15PreviewsSupport15AnyViewModifierV4body7contentQr7SwiftUI01_dE8_ContentVyACyxGG_tF", 0) __<M>
+}
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+public enum PreviewModifierSupport {
+  public static func toViewModifier<A>(modifier: A) -> PreviewsSupport.AnyViewModifier<A> where A : SwiftUI.PreviewModifier, A.Context == ()
+}
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+extension PreviewsSupport.AnyViewModifier : Swift.Sendable {}
