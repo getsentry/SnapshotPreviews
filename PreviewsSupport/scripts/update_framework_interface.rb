@@ -31,6 +31,19 @@ for file_path in swiftui_interface
       ")
     end
   end
+
+  if !File.read(file_path).include?("PreviewModifierViewModifier")
+    File.open(file_path, 'a') do |file|
+      file.puts("@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+public struct PreviewModifierViewModifier<A> where A : PreviewModifier {
+    public func body(content: SwiftUI._ViewModifier_Content<PreviewModifierViewModifier<A>>) -> some View
+    public init(modifier: A, context: A.Context)
+}
+extension PreviewModifierViewModifier : SwiftUI.ViewModifier where A : SwiftUI.PreviewModifier {
+}")
+    end
+  end
+
 end
 
 for file_path in uikit_interface

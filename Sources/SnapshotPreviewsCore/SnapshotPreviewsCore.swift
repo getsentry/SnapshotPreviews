@@ -1,6 +1,51 @@
 import SwiftUI
 import PreviewsSupport
 
+@available(iOS 18.0, *)
+struct AnyPreviewModifier: PreviewModifier {
+    private let _body: (PreviewModifier.Content) -> AnyView
+  
+  static var contextCache: [String: Any] = [:]
+    
+    // Initialize with a concrete PreviewModifier
+    init<M: PreviewModifier>(_ modifier: M) {
+      let type = type(of: modifier)
+      let hash = String(describing: type)
+      
+      _body = { content in
+          var cachedContext = PreviewModifierContextCache.contextCache[hash] ?? ()
+          // TODO: Load all makeSharedContext()
+          guard let typedContext = cachedContext as? M.Context else {
+            fatalError("Context type mismatch, expected: \(String(describing: M.Context.self)), got: \(String(describing: cachedContext.self))")
+          }
+          return AnyView(modifier.body(content: content, context: typedContext))
+        }
+    }
+    
+    static func makeSharedContext() async throws -> Any {
+      // Not necessary since we load it from the PreviewModifier
+      return ()
+    }
+    
+    func body(content: PreviewModifier.Content, context: Any) -> AnyView {
+        return _body(content)
+    }
+}
+
+@available(iOS 18.0, *)
+struct AnyModifier: ViewModifier {
+  private var modifier: any PreviewModifier
+  
+  init<M: PreviewModifier>(_ modifier: M) {
+    self.modifier = modifier
+  }
+  
+  func body(content: Content) -> some View {
+    content
+      .modifier(PreviewModifierViewModifier(modifier: AnyPreviewModifier(modifier), context: ()))
+  }
+}
+
 public struct Preview: Identifiable {
   init<P: SwiftUI.PreviewProvider>(preview: _Preview, type: P.Type) {
     previewId = "\(preview.id)"
@@ -39,6 +84,18 @@ public struct Preview: Identifiable {
         }
       }
     }
+    
+    let previewModifiers = traits.compactMap({ trait in
+      if let value = Mirror(reflecting: trait).descendant("value") {
+        if #available(iOS 18.0, *) {
+          if let value = value as? [(any PreviewModifier)] {
+            return value
+          }
+        }
+      }
+      return nil
+    }).flatMap(\.self)
+    
     self.orientation = orientation
     self.layout = layout
     displayName = preview.descendant("displayName") as? String
@@ -49,7 +106,16 @@ public struct Preview: Identifiable {
     let _view: @MainActor () -> any View
     if let source = source as? MakeViewProvider {
       _view = {
-        return source.makeView()
+        // TODO: use external function
+        if #available(iOS 18.0, *) {
+          var currentView: AnyView = AnyView(source.makeView())
+          for modifier in previewModifiers {
+            currentView = AnyView(currentView.modifier(AnyModifier(AnyPreviewModifier(modifier))))
+          }
+          return currentView
+        } else {
+          return AnyView(source.makeView())
+        }
       }
     } else {
       #if canImport(UIKit) && !os(watchOS)
