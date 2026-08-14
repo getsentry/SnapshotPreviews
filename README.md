@@ -398,4 +398,4 @@ You don't need to build anything to use the released artifacts above. You can bu
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=EmergeTools/SnapshotPreviews&type=Date)](https://star-history.com/#EmergeTools/SnapshotPreviews&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=EmergeTools/SnapshotPreviews&type=Date)](https://star-history.dera.page/#EmergeTools/SnapshotPreviews&Date)
