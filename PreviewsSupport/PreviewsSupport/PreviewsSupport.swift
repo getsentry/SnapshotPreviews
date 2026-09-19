@@ -105,3 +105,24 @@ extension DefaultPreviewSource: MakeViewControllerProvider where A == UIViewCont
 }
 
 #endif
+
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+public struct AnyViewModifier<M: PreviewModifier>: ViewModifier where M.Context == Void {
+  private var modifier: M
+
+  public init(_ modifier: M) {
+   self.modifier = modifier
+  }
+
+  public func body(content: Content) -> some View {
+   content
+     .modifier(PreviewModifierViewModifier(modifier: modifier, context: ()))
+  }
+}
+
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
+public enum PreviewModifierSupport {
+  public static func toViewModifier<A: PreviewModifier>(modifier: A) -> AnyViewModifier<A> where A.Context == Void {
+    return AnyViewModifier(modifier)
+  }
+}

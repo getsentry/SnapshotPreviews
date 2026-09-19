@@ -122,6 +122,248 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "AnyViewModifier",
+        "printedName": "AnyViewModifier",
+        "children": [
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "AnyViewModifier",
+                "printedName": "PreviewsSupport.AnyViewModifier<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:15PreviewsSupport15AnyViewModifierV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:15PreviewsSupport15AnyViewModifierVyACyxGxcfc",
+            "mangledName": "$s15PreviewsSupport15AnyViewModifierVyACyxGxcfc",
+            "moduleName": "PreviewsSupport",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI.PreviewModifier, τ_0_0.Context == ()>",
+            "sugared_genericSig": "<M where M : SwiftUI.PreviewModifier, M.Context == ()>",
+            "declAttributes": [
+              "Preconcurrency",
+              "Custom",
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "body",
+            "printedName": "body(content:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "OpaqueTypeArchetype",
+                "printedName": "some SwiftUI.View",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "View",
+                    "printedName": "SwiftUI.View",
+                    "usr": "s:7SwiftUI4ViewP"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "_ViewModifier_Content",
+                "printedName": "SwiftUI._ViewModifier_Content<PreviewsSupport.AnyViewModifier<τ_0_0>>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AnyViewModifier",
+                    "printedName": "PreviewsSupport.AnyViewModifier<τ_0_0>",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "GenericTypeParam",
+                        "printedName": "τ_0_0"
+                      }
+                    ],
+                    "usr": "s:15PreviewsSupport15AnyViewModifierV"
+                  }
+                ],
+                "usr": "s:7SwiftUI21_ViewModifier_ContentV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:15PreviewsSupport15AnyViewModifierV4body7contentQr7SwiftUI01_dE8_ContentVyACyxGG_tF",
+            "mangledName": "$s15PreviewsSupport15AnyViewModifierV4body7contentQr7SwiftUI01_dE8_ContentVyACyxGG_tF",
+            "moduleName": "PreviewsSupport",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI.PreviewModifier, τ_0_0.Context == ()>",
+            "sugared_genericSig": "<M where M : SwiftUI.PreviewModifier, M.Context == ()>",
+            "declAttributes": [
+              "Preconcurrency",
+              "Custom",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:15PreviewsSupport15AnyViewModifierV",
+        "mangledName": "$s15PreviewsSupport15AnyViewModifierV",
+        "moduleName": "PreviewsSupport",
+        "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI.PreviewModifier, τ_0_0.Context == ()>",
+        "sugared_genericSig": "<M where M : SwiftUI.PreviewModifier, M.Context == ()>",
+        "intro_Macosx": "15.0",
+        "intro_iOS": "18.0",
+        "intro_tvOS": "18.0",
+        "intro_watchOS": "11.0",
+        "declAttributes": [
+          "Preconcurrency",
+          "Custom",
+          "AccessControl",
+          "Available",
+          "Available",
+          "Available",
+          "Available"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "ViewModifier",
+            "printedName": "ViewModifier",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "Body",
+                "printedName": "Body",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "OpaqueTypeArchetype",
+                    "printedName": "some SwiftUI.View",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "View",
+                        "printedName": "SwiftUI.View",
+                        "usr": "s:7SwiftUI4ViewP"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:7SwiftUI12ViewModifierP",
+            "mangledName": "$s7SwiftUI12ViewModifierP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "PreviewModifierSupport",
+        "printedName": "PreviewModifierSupport",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "toViewModifier",
+            "printedName": "toViewModifier(modifier:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "AnyViewModifier",
+                "printedName": "PreviewsSupport.AnyViewModifier<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:15PreviewsSupport15AnyViewModifierV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:15PreviewsSupport015PreviewModifierB0O06toViewD08modifierAA03AnyfD0VyxGx_t7SwiftUI0cD0Rzyt7ContextRtzlFZ",
+            "mangledName": "$s15PreviewsSupport015PreviewModifierB0O06toViewD08modifierAA03AnyfD0VyxGx_t7SwiftUI0cD0Rzyt7ContextRtzlFZ",
+            "moduleName": "PreviewsSupport",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI.PreviewModifier, τ_0_0.Context == ()>",
+            "sugared_genericSig": "<A where A : SwiftUI.PreviewModifier, A.Context == ()>",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:15PreviewsSupport015PreviewModifierB0O",
+        "mangledName": "$s15PreviewsSupport015PreviewModifierB0O",
+        "moduleName": "PreviewsSupport",
+        "intro_Macosx": "15.0",
+        "intro_iOS": "18.0",
+        "intro_tvOS": "18.0",
+        "intro_watchOS": "11.0",
+        "declAttributes": [
+          "AccessControl",
+          "Available",
+          "Available",
+          "Available",
+          "Available"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
         "name": "ViewPreviewSource",
         "printedName": "ViewPreviewSource",
         "declKind": "Struct",

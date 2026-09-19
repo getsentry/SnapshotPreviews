@@ -91,10 +91,11 @@ xcodebuild archive \
  SKIP_INSTALL=NO \
  CLANG_CXX_LANGUAGE_STANDARD=c++17
 
- xcodebuild archive \
+xcodebuild archive \
  -scheme PreviewsSupport \
  -archivePath ./PreviewsSupport-macosx.xcarchive \
  -sdk macosx \
+ -destination 'generic/platform=macOS' \
  BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
  INSTALL_PATH='Library/Frameworks' \
  SKIP_INSTALL=NO \

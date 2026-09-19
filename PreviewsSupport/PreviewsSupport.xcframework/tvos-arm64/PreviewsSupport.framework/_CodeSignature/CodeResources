@@ -14,15 +14,15 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		ZwTPHgcCes0gbbIWTp26ph4P4DE=
+		bjjHLro846yyL9l3QxmkljjdjVo=
 		</data>
 		<key>Modules/PreviewsSupport.swiftmodule/arm64-apple-tvos.abi.json</key>
 		<data>
-		pvnbUYGZZJvuN0EX4dxSLv77GEM=
+		vkPYS1sILI7k9Mqc7uj/0meFgnw=
 		</data>
 		<key>Modules/PreviewsSupport.swiftmodule/arm64-apple-tvos.private.swiftinterface</key>
 		<data>
-		V6m5XhRJnDEsMM8NWJ+h2KDlT0M=
+		QvmvUTXOoRq++aWcLXncIiljBy0=
 		</data>
 		<key>Modules/PreviewsSupport.swiftmodule/arm64-apple-tvos.swiftdoc</key>
 		<data>
@@ -30,11 +30,11 @@
 		</data>
 		<key>Modules/PreviewsSupport.swiftmodule/arm64-apple-tvos.swiftinterface</key>
 		<data>
-		HhMeB3xRe4558Um3Ta3e4cmAaC8=
+		7Obx18dEVUtMRiKwAAzlFbVgXto=
 		</data>
 		<key>Modules/PreviewsSupport.swiftmodule/arm64-apple-tvos.swiftmodule</key>
 		<data>
-		UA3qfQ///FhhgCY/O7mOTdd2Pac=
+		LdGkYZSiYzDg6ktWcIzwB7lSw8U=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -61,14 +61,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			GVJPxIbiEEUcNoUeRXhr5+TRSQImqphXoK+e6czzJiY=
+			eytM0xtqfTDY0Mkz/aoZAUbWAhGugCXH/QbwLztjpFU=
 			</data>
 		</dict>
 		<key>Modules/PreviewsSupport.swiftmodule/arm64-apple-tvos.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			TERh8RMPHX3gsEGwBRAA6xH8elgw6kk3Zxmpegjt8kQ=
+			PD1ZD7ieycvCY+8AMLxIK0FA5Rg7YWFoea6UnXHTChw=
 			</data>
 		</dict>
 		<key>Modules/PreviewsSupport.swiftmodule/arm64-apple-tvos.swiftdoc</key>
@@ -82,14 +82,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			JqnrdmGqLhZ+uuzdNXgFTrMa4AQ7s5lZnyrfrVl+j4o=
+			Moaaiy27V/NBDqN5lRNKqil+IAAaTKyQVI5CeDuyAoA=
 			</data>
 		</dict>
 		<key>Modules/PreviewsSupport.swiftmodule/arm64-apple-tvos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			TezZqcHcLhv95tuMUFTuVEKDyqtqPZwAPTChVfkNies=
+			+x2X2SUmgipCqkQlMOCu5NfS1rdnW5u5ebmu30cWlLA=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
