@@ -12,9 +12,6 @@ final class UIImagePNGEncodingTests: XCTestCase {
     // Deliberately use UIKit directly, rather than the workaround.
     let pixel = try pngPixel(XCTUnwrap(image.pngData()))
     XCTAssertEqual(Double(pixel[3]) / 65535, 0.5, accuracy: 0.001)
-    let colorError = try XCTUnwrap(pixel.prefix(3).map {
-      abs(Double($0) / 65535 - 0.96)
-    }.max())
 
     let options = XCTExpectedFailure.Options()
     options.isStrict = true
@@ -24,7 +21,9 @@ final class UIImagePNGEncodingTests: XCTestCase {
       "UIKit's extended-range PNG alpha bug: if this unexpectedly passes on a new runtime, reassess the ImageIO workaround.",
       options: options
     ) {
-      XCTAssertLessThanOrEqual(colorError, 0.001)
+      for channel in pixel.prefix(3) {
+        XCTAssertEqual(Double(channel) / 65535, 0.96, accuracy: 0.001)
+      }
     }
   }
 
