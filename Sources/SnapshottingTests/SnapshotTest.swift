@@ -242,6 +242,8 @@ open class SnapshotTest: PreviewBaseTest, PreviewFilters {
       includedModules: Self.snapshotPreviewModules(),
       excludedModules: Self.excludedSnapshotPreviewModules()
     )
+    .filter(SnapshotPreviewInclusionFilter.shouldInclude)
+
     fileNameResolver = FileNameResolver(previews: previews)
 
     if let allSnapshotImageNamesWriter {

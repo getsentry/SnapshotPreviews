@@ -60,6 +60,7 @@ open class PreviewLayoutTest: PreviewBaseTest, PreviewFilters {
       includedModules: Self.snapshotPreviewModules(),
       excludedModules: Self.excludedSnapshotPreviewModules()
     )
+    .filter(SnapshotPreviewInclusionFilter.shouldInclude)
     return previews.map { DiscoveredPreview.from(previewType: $0) }
   }
 
