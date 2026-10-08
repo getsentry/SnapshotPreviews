@@ -1,0 +1,43 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test-ios:
+    name: iOS unit tests
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Log test environment
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphonesimulator --show-sdk-version
+          xcrun simctl list runtimes
+
+      - name: Run package tests
+        run: |
+          xcodebuild test \
+            -scheme SnapshotPreviews-Package \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' \
+            -resultBundlePath UnitTests.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-unit-test-results
+          path: UnitTests.xcresult
+          if-no-files-found: ignore
+          retention-days: 7
