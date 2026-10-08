@@ -54,7 +54,12 @@ final class UIImagePNGEncodingTests: XCTestCase {
 
   func testOrientedImageMatchesUIKitPNGEncoding() throws {
     let original = try XCTUnwrap(makeImage(range: .standard).cgImage)
-    for orientation in [UIImage.Orientation.up, .down, .left, .right, .upMirrored, .downMirrored, .leftMirrored, .rightMirrored] {
+    let orientations: [(UIImage.Orientation, CGImagePropertyOrientation)] = [
+      (.up, .up), (.down, .down), (.left, .left), (.right, .right),
+      (.upMirrored, .upMirrored), (.downMirrored, .downMirrored),
+      (.leftMirrored, .leftMirrored), (.rightMirrored, .rightMirrored),
+    ]
+    for (orientation, pngOrientation) in orientations {
       let image = UIImage(cgImage: original, scale: 2, orientation: orientation)
       let expectedData = try XCTUnwrap(image.pngData())
       let data = try XCTUnwrap(image.emg.pngData())
@@ -66,11 +71,14 @@ final class UIImagePNGEncodingTests: XCTestCase {
       // alone would pass even if every image incorrectly reloaded as .up.
       XCTAssertEqual(try XCTUnwrap(UIImage(data: data)).imageOrientation, orientation)
       let properties = try pngProperties(data)
+      let encodedOrientation = try XCTUnwrap(properties[kCGImagePropertyOrientation] as? Int)
+      XCTAssertEqual(encodedOrientation, Int(pngOrientation.rawValue))
+
+      // Older UIKit versions may omit orientation metadata from their PNGs.
       let expectedProperties = try pngProperties(expectedData)
-      XCTAssertEqual(
-        try XCTUnwrap(properties[kCGImagePropertyOrientation] as? Int),
-        try XCTUnwrap(expectedProperties[kCGImagePropertyOrientation] as? Int)
-      )
+      if let uikitOrientation = expectedProperties[kCGImagePropertyOrientation] as? Int {
+        XCTAssertEqual(encodedOrientation, uikitOrientation)
+      }
     }
   }
 
