@@ -98,6 +98,11 @@ public final class ExpandingViewController: UIHostingController<EmergeModifierVi
       return
     }
 
+    // Verify scrollview has no pending layout updates
+    if let firstScrollView = firstScrollView as? UIScrollView {
+        firstScrollView.layoutIfNeeded()
+    }
+
     updateHeight {
       runCallback()
     }
